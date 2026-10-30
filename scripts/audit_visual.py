@@ -38,10 +38,17 @@ def compare(reference: Path, rendered: Path, out_dir: Path, threshold: int = 20,
         raise ValueError('All pixels are masked out')
     mean = ImageStat.Stat(diff, mask=valid).mean
     pixel_mae = sum(mean) / 3
+    # Masked pixels must not appear as defects in any exported diagnostic image.
     overlay = Image.blend(ref, result, alpha=0.5)
+    diff_contrast = ImageEnhance.Contrast(diff).enhance(3)
+    neutral = Image.new('RGB', (w, h), '#bcbcbc')
+    overlay = Image.composite(overlay, neutral, valid)
+    diff_contrast = Image.composite(diff_contrast, neutral, valid)
+    binary = ImageChops.multiply(binary, valid)
     overlay.save(out_dir / 'overlay.png')
-    ImageEnhance.Contrast(diff).enhance(3).save(out_dir / 'diff.png')
+    diff_contrast.save(out_dir / 'diff.png')
     binary.save(out_dir / 'threshold-diff.png')
+    valid.save(out_dir / 'valid-pixel-mask.png')
     report = {
         'reference': str(reference), 'rendered': str(rendered),
         'width_px': w, 'height_px': h, 'threshold_channel_value': threshold,
@@ -50,6 +57,7 @@ def compare(reference: Path, rendered: Path, out_dir: Path, threshold: int = 20,
         'mean_absolute_error_rgb_0_to_255': round(pixel_mae, 3),
         'excluded_regions': excluded,
         'overlay': str(out_dir / 'overlay.png'), 'diff': str(out_dir / 'diff.png'),
+        'threshold_diff': str(out_dir / 'threshold-diff.png'), 'mask_visualization': str(out_dir / 'valid-pixel-mask.png'),
         'note': 'Diagnostic pixel metric; not a fidelity score. Fonts, DPR and browser rasterization can change pixels.'
     }
     (out_dir / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

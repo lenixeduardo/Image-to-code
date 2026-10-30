@@ -64,7 +64,7 @@ def export(image_path: Path, regions_path: Path, out_dir: Path):
             remove = region.get('remove_border_background', False)
             if remove:
                 tolerance = region.get('tolerance', 8)
-                if not isinstance(tolerance, int) or not 0 <= tolerance <= 50:
+                if type(tolerance) is not int or not 0 <= tolerance <= 50:
                     raise ValueError('tolerance must be integer 0..50')
                 im = remove_border_background(im, tolerance)
             destination = out_dir / f'{ident}.png'

@@ -18,3 +18,10 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Syntax-check Python scripts
         run: python -m compileall -q scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate browser capture CLI (dependency-free)
+        run: node --test tests/test_capture.mjs
+      - name: Syntax-check capture engine
+        run: node --check scripts/capture.mjs

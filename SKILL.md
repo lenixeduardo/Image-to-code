@@ -79,8 +79,8 @@ Read `references/responsive-rules.md` and `references/implementation-guide.md` d
 
 ### 6. Validate visually; iterate
 
-1. Run project lint/build/tests where available; inspect console and runtime errors.
-2. Render **desktop, tablet, and mobile screenshots** using browser automation, e.g. `node scripts/capture.mjs --url http://localhost:3000 --out artifacts/screenshots` after installing Playwright. Record screenshots in the final deliverables. **Embed the required side-by-side boards visibly in the chat** when the interface supports it; never substitute download links for in-chat evidence.
+1. Run project lint/build/tests where available; inspect console and runtime errors. Also run `python -m unittest discover -s tests -v` and `node --test tests/test_capture.mjs` for changes to this skill; these checks verify the tooling, not UI fidelity.
+2. Render **desktop, tablet, and mobile screenshots**, plus matching original viewport and intermediate widths, using browser automation, e.g. `node scripts/capture.mjs --url http://localhost:3000 --out artifacts/screenshots --reference-viewport 1179x616 --smoke-widths 360,430,768,1024,1280,1920` after installing Playwright. Record screenshots and `capture-report.json` in the final deliverables; fail quality gates on broken images, JavaScript errors, unlabeled interactive controls, horizontal overflow or missing main landmark. Do not pass `--allow-warnings` for approval. **Embed the required side-by-side boards visibly in the chat** when the interface supports it; never substitute download links for in-chat evidence.
 3. For each supplied reference and matching viewport: run `python scripts/audit_visual.py --reference input.png --render artifacts/screenshots/desktop.png --out artifacts/audit/desktop`. Sizes must match; if they do not, correct the viewport rather than silently resize.
 4. Review geometry, font rendering, assets, colors, spacing, responsive behavior and interactions manually. Fix the largest divergences, re-capture, and compare again. Treat automated pixel error as a **diagnostic**, not an authoritative visual quality score. See `references/visual-qa.md`.
 5. Produce the **mandatory presentation boards** via `scripts/present_results.py`, and show both **directly inside the chat**, not just as downloadable links: mobile + tablet side-by-side; if the source reference is a desktop UI screenshot, original desktop + rebuilt desktop side-by-side. Never use a single giant multi-device collage. If source and render are not the same viewport, disclose the mismatch and recapture before a fidelity claim. Consult `references/presentation-standard.md`.
@@ -108,3 +108,12 @@ Never claim assets were created, screenshots captured, tests passed or a page wa
 - [Implementation rules](references/implementation-guide.md)
 - [Visual QA and acceptance](references/visual-qa.md)
 - [Mandatory demonstration format](references/presentation-standard.md)
+
+## Acceptance integrity (v1.1.0)
+
+- A tool test passing is not proof of a faithful reconstructed website. A full QA report needs an actual browser render, comparison at matching viewport/DPR and user-visible evidence boards.
+- Browser runtime checks include failed/broken images, interactive controls without accessible names, JavaScript console errors, missing `main`, horizontal overflow and failed requests. Investigate rather than blanket ignoring failures.
+- In screenshot audits, any excluded dynamic regions must be explicit, limited in scope and **visible as neutral masks** in diagnostics. Never use large masks to hide defective artwork.
+- Never assign a perfect 10/10 to the skill or a reconstructed page when end-to-end browser execution is blocked or when referenced viewports and fonts cannot be validated. Document unresolved gaps by severity.
+
+- For desktop screenshot QA, invoke `scripts/present_results.py` with `--require-matching-desktop` to make mismatched dimensions a failed acceptance gate, not just a warning.

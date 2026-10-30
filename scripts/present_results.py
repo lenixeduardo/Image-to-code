@@ -95,11 +95,12 @@ def main():
     ap.add_argument('--reference-kind', choices=['auto', 'desktop', 'tablet', 'mobile', 'other'], default='auto')
     ap.add_argument('--reference-crop', type=int, nargs=4, metavar=('X', 'Y', 'W', 'H'), help='Corte EXPLÍCITO da área de UI da referência, registrado no manifesto')
     ap.add_argument('--out', default='artifacts/presentation', help='Diretório das pranchas')
+    ap.add_argument('--require-matching-desktop', action='store_true', help='Falhar se a referência desktop e a reconstrução não tiverem dimensões idênticas')
     args = ap.parse_args()
     mobile, tablet, desktop = load(args.mobile), load(args.tablet), load(args.desktop)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    report = {'version': '1.0.2', 'source': { 'mobile': args.mobile, 'tablet': args.tablet, 'desktop': args.desktop }, 'captures': {}, 'outputs': [], 'warnings': []}
+    report = {'version': '1.1.0', 'source': { 'mobile': args.mobile, 'tablet': args.tablet, 'desktop': args.desktop }, 'captures': {}, 'outputs': [], 'warnings': []}
     duo = layout([
         (f'MOBILE  ·  {mobile.width} px', mobile, 530),
         (f'TABLET  ·  {tablet.width} px', tablet, 820)
@@ -142,6 +143,8 @@ def main():
     target = out / 'presentation-report.json'
     target.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({'outputs': [str(out / p['file']) for p in report['outputs']], 'report': str(target), 'warnings': report['warnings']}, ensure_ascii=False, indent=2))
+    if args.require_matching_desktop and ref_kind == 'desktop' and not report['desktop_reference_viewport_match']:
+        raise SystemExit('BLOCKED: desktop screenshots must match before fidelity scoring')
 
 
 if __name__ == '__main__':

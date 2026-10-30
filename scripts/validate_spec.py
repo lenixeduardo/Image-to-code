@@ -2,6 +2,7 @@
 """Validate structural consistency and evidence provenance of a design-spec.json."""
 import argparse
 import json
+from pathlib import PurePosixPath
 from pathlib import Path
 from jsonschema import Draft202012Validator
 
@@ -26,7 +27,16 @@ def validate(doc, schema):
             x, y, w, h = layer['bounds']
             if w <= 0 or h <= 0 or x+w > doc['source']['width_px'] or y+h > doc['source']['height_px']:
                 errors.append(f'layer {layer["id"]} bounds outside reference image')
+    for component in doc['components']:
+        if component['bounds'] is not None:
+            x, y, w, h = component['bounds']
+            if w <= 0 or h <= 0 or x+w > doc['source']['width_px'] or y+h > doc['source']['height_px']:
+                errors.append(f'component {component["id"]} bounds outside reference image')
     for asset in doc['assets']:
+        if asset.get('file'):
+            asset_path = PurePosixPath(asset['file'].replace('\\', '/'))
+            if asset_path.is_absolute() or '..' in asset_path.parts:
+                errors.append(f'asset {asset["id"]} has unsafe file path')
         if asset['status'] in ('original-used', 'extracted', 'generated-with-authorization') and not asset['file']:
             errors.append(f'asset {asset["id"]} marked present without file')
     return errors

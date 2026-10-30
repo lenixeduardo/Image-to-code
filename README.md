@@ -28,7 +28,7 @@ A reusable **Agent Skill** for converting screenshots and mockups into working, 
 As a globally discoverable skill:
 
 ```bash
-git clone https://github.com/lenixeduardo/Image-to-code-.git image-to-code
+git clone https://github.com/lenixeduardo/image-to-code.git image-to-code
 mkdir -p ~/.agents/skills
 cp -R image-to-code ~/.agents/skills/image-to-code
 ```
@@ -45,6 +45,15 @@ The host needs to support loading Agent Skills and have access to your visual re
 ## Example agent request
 
 > Use `$image-to-code` to recreate the attached mockup in my current Next.js project. First break it down into background, grids, components, font families, title/body sizes, icons and images. Export assets separately when technically recoverable. Document desktop/tablet/mobile behavior and implement the page. Capture all three viewports, compare visually and correct the differences. Preserve the original artwork and report anything inferred or not recoverable.
+
+## Quality controls — v1.1.0
+
+- The screenshot helper checks for missing images, JavaScript errors, unnamed interactive controls, missing page landmarks, and horizontal overflow. It fails on these errors by default.
+- Browser capture supports a reference-matched viewport and additional widths: `node scripts/capture.mjs --url http://localhost:3000 --reference-viewport 1179x616 --smoke-widths 360,430,768,1024,1280,1920`. `--allow-warnings` is only for diagnostics, **not** acceptance.
+- For acceptance, add `--require-matching-desktop` to `present_results.py` to fail when comparison dimensions differ.
+- Pixel diff masks affect **both metrics and exported evidence**, including `threshold-diff.png`; excluded regions are marked in gray in the overlay and original image differences are never hidden silently.
+- Run `python -m unittest discover -s tests -v` and `node --test tests/test_capture.mjs` before accepting a result. A successful test run verifies the scripts but **does not prove pixel-perfect reconstruction** without a browser and user reference images.
+- If the environment blocks navigation or lacks a browser, record the blocker instead of inventing screenshots or saying the end-to-end test passed.
 
 ## Optional scripts
 

@@ -130,3 +130,83 @@ class PresentationTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+class ExtendedAuditTests(unittest.TestCase):
+    """Guard against false-positive validations and misleading evidence images."""
+
+    def test_mask_excludes_pixels_from_metrics_and_visuals(self):
+        with tempfile.TemporaryDirectory() as td:
+            from PIL import Image
+            root = Path(td)
+            a = root/'a.png'; b = root/'b.png'; masks = root/'masks.json'; out = root/'audit'
+            Image.new('RGB', (10, 10), '#ffffff').save(a)
+            Image.new('RGB', (10, 10), '#000000').save(b)
+            masks.write_text(json.dumps({'exclude': [{'x': 0, 'y': 0, 'width': 10, 'height': 5}]}))
+            subprocess.run([sys.executable, str(ROOT/'scripts/audit_visual.py'), '--reference', str(a), '--render', str(b), '--out', str(out), '--masks', str(masks)], check=True, capture_output=True)
+            report = json.loads((out/'report.json').read_text())
+            self.assertEqual(report['excluded_pixels'], 50)
+            self.assertEqual(report['mismatch_pixels'], 50)
+            self.assertEqual(report['mismatch_fraction'], 1)
+            with Image.open(out/'threshold-diff.png') as img:
+                self.assertEqual(img.getpixel((0, 0)), 0)
+                self.assertEqual(img.getpixel((0, 8)), 255)
+            with Image.open(out/'overlay.png') as img:
+                self.assertEqual(img.getpixel((0, 0)), (188, 188, 188))
+
+    def test_all_pixels_masked_is_not_valid_evidence(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td); a = root/'a.png'; b = root/'b.png'
+            Image.new('RGB', (2, 2)).save(a); Image.new('RGB', (2, 2)).save(b)
+            mask = root/'mask.json'; mask.write_text(json.dumps({'exclude':[{'x':0,'y':0,'width':2,'height':2}]}))
+            result = subprocess.run([sys.executable, str(ROOT/'scripts/audit_visual.py'), '--reference', str(a), '--render', str(b), '--out', str(root/'audit'), '--masks', str(mask)], capture_output=True)
+            self.assertNotEqual(result.returncode, 0)
+
+    def test_component_bounds_and_asset_path_rejected(self):
+        from scripts.validate_spec import validate
+        schema = json.loads((ROOT/'references/design-spec.schema.json').read_text())
+        valid = json.loads((ROOT/'examples/design-spec.example.json').read_text())
+        self.assertEqual(validate(valid, schema), [])
+        bad = json.loads(json.dumps(valid)); bad['components'][0]['bounds'] = [20000, 0, 10, 10]
+        self.assertTrue(any('component' in e for e in validate(bad, schema)))
+        bad = json.loads(json.dumps(valid)); bad['assets'].append({'id': 'bad-asset', 'type': 'image', 'file': '../../secrets.txt', 'origin': 'test', 'usage': 'test', 'license': 'test', 'status': 'original-used', 'evidence': 'observed'})
+        self.assertTrue(any('unsafe file path' in e for e in validate(bad, schema)))
+
+    def test_cli_crop_boolean_tolerance_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td); img = root/'a.png'; regions = root/'regions.json'
+            Image.new('RGB', (8, 8), 'white').save(img)
+            regions.write_text(json.dumps({'regions': [{'id': 'bad', 'bounds': [0, 0, 4, 4], 'remove_border_background': True, 'tolerance': True}]}))
+            run = subprocess.run([sys.executable, str(ROOT/'scripts/export_layers.py'), str(img), '--regions', str(regions), '--out', str(root/'output')], capture_output=True)
+            self.assertNotEqual(run.returncode, 0)
+
+    def test_complete_image_pipeline(self):
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td); image=root/'reference.png'
+            Image.new('RGB', (1179, 616), '#f8f8f8').save(image)
+            regions=root/'regions.json'
+            regions.write_text(json.dumps({'regions':[{'id':'background','bounds':[0,0,1179,616],'kind':'background'}]}))
+            checks=[
+                [sys.executable, str(ROOT/'scripts/image_inventory.py'), str(image), '--out', str(root/'inventory.json')],
+                [sys.executable, str(ROOT/'scripts/export_layers.py'), str(image), '--regions', str(regions), '--out', str(root/'assets')],
+                [sys.executable, str(ROOT/'scripts/validate_spec.py'), str(ROOT/'examples/design-spec.example.json')],
+                [sys.executable, str(ROOT/'scripts/audit_visual.py'), '--reference', str(image), '--render', str(image), '--out', str(root/'audit')],
+            ]
+            for cmd in checks: subprocess.run(cmd, check=True, capture_output=True)
+            self.assertEqual(json.loads((root/'audit/report.json').read_text())['mismatch_fraction'], 0)
+            self.assertTrue((root/'assets/background.png').exists())
+            self.assertTrue((root/'inventory.json').exists())
+
+
+class StrictPresentationTests(unittest.TestCase):
+    def test_mismatched_desktop_fails_quality_gate(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            for name, size in [('mobile', (390, 844)), ('tablet', (820, 1180)), ('desktop', (1440, 900)), ('original', (1179, 616))]:
+                Image.new('RGB', size, 'white').save(root/f'{name}.png')
+            cmd = [sys.executable, str(ROOT/'scripts/present_results.py'),
+                   '--mobile', str(root/'mobile.png'), '--tablet', str(root/'tablet.png'),
+                   '--desktop', str(root/'desktop.png'), '--reference', str(root/'original.png'),
+                   '--reference-kind', 'desktop', '--require-matching-desktop', '--out', str(root/'report')]
+            bad = subprocess.run(cmd, capture_output=True)
+            self.assertNotEqual(bad.returncode, 0)
+            self.assertFalse(json.loads((root/'report/presentation-report.json').read_text())['desktop_comparison_eligible_for_visual_audit'])
