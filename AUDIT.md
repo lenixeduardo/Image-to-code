@@ -28,6 +28,14 @@ This file documents what has and has not been verified. It is not a claim that e
 
 **Interpretation:** 17 passing automated tests support the reliability of the deterministic tools. They do not independently establish a 10/10 visual fidelity score for reconstructed interfaces.
 
+## v1.4.0 — New regression protocol (2026-10-30)
+
+- User-reported Catty analysis-2 issues are tracked as one unique regression set (the two requests repeated the same defects): icons differ; typography differs slightly; CTA too large; illustrated subject has baked-in glow; replacement introduces upper/lower blur and loses paw.
+- Two independent review scopes plus one acceptance scope are specified in `references/fidelity-gates.md`. This skill repository has no autonomous agent runtime; role definitions do not prove three subagents actually ran.
+- Added strict region and immutable SHA-256 asset checks to `scripts/audit_fidelity_contract.py` with synthetic positive/negative tests. Oversized button geometry is rejected without scaling its crop; substituted icon/font pixel shapes, changed assets, missing glow/paw regions, invalid references and incomplete required categories are rejected.
+- The real approved Catty mockup/source composite and a browser capture were **not supplied to this skill repository audit**. No real Catty render comparison or Catty-site 9.5/10 fidelity score is claimed here. Application corrections require a separate change to the Catty application repository.
+- The standalone regression tests verify gate behavior on synthetic fixtures, not the fidelity of the actual Catty page.
+
 ## v1.3.0 — Catty full-stack regression case
 
 Tested against `lenixeduardo/catty-minhaamiga` with approved three-screen mobile mockup and a GitHub Actions Chromium run. The separate Catty QA branch/PR reported 25/31 checks passing, with five missing image variants and one desktop tab interaction failing. Original Catty application tests: 36 passed, 4 failed, 2 skipped. Build passed. Gemini Live streaming and authenticated Supabase were not validated without real secrets/device permissions.
