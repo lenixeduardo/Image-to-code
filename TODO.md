@@ -28,3 +28,12 @@
 - A synthetic zero false-positive rate does not establish field false-positive rate.
 - Browser geometry cannot approve a cropped phone, missing paw or overwritten source lighting.
 - Never publish private reference screenshots or licensed fonts from this test data to the public repository.
+## v1.8.0 — Environment readiness and remaining acceptance gates
+
+- [x] Prepare isolated native directories and optional official npm installation probes for Claude Code, Codex, OpenCode, Codebuff/Freebuff and Gemini CLI. Hermes/Cursor installers are left for explicit manual review.
+- [x] Add authoritative font file identity checker with SHA-256, metadata and a fail-closed missing-source status.
+- [x] Add automatic post-CI/weekly longitudinal aggregation and per-run sanitized QA artifact emission, with unavailable older data marked N/D.
+- [ ] Run each external CLI with provider authorization on a real image-to-code case, collect an actual browser screenshot and correction trace. Installation checks alone do not satisfy this.
+- [ ] Provide approved licensed font files (or verified hashes) for Catty and other benchmarks; until then exact font identity is unconfirmed.
+- [ ] Accumulate at least three new completed CI executions with metric artifacts for statistically meaningful cross-run trends; older runs may have expired evidence.
+- [ ] Review native Hermes/Cursor installers and execute them on a supported, isolated environment; do not pipe unreviewed remote scripts into a shell.

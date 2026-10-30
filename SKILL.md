@@ -198,3 +198,13 @@ Before claiming high fidelity, run **independent** checks for masked regional si
 - `scripts/build_state_dashboard.py`: linked local states/heatmaps/interactive overlays with no proprietary uploads.
 
 Do not assign a completed P0 to three separate projects unless each has independently approved, non-derived mobile/tablet/desktop references and real-browser evidence. An image-capable coding agent's autonomous pipeline and original flattened Catty layers also require direct proof. Never upload proprietary screenshots or font files to a public CI artifact.
+
+
+## Real coding agents, font identity, longitudinal CI (v1.8.0)
+
+1. Prepare native agent skill layouts and isolated runtimes with `python scripts/prepare_cli_environments.py --skill-root . --out artifacts/cli-preflight --check`. Use the **manual** GitHub Actions workflow `CLI runtime environment validation` to try official npm installs on isolated Linux runners. A binary reporting `--version` is **NOT** authenticated agent invocation.
+2. Before claiming an *exact* original font, use `scripts/verify_font_identity.py` with a licensed original font file or owner-confirmed SHA-256. Missing original font source MUST be `ORIGINAL_UNAVAILABLE`, regardless of CSS family/weight or visual similarity. Do not commit or distribute font binaries.
+3. `scripts/ci_metrics.py` writes sanitized per-job QA counts. `Aggregate Image to Code QA history` downloads only `qa-metrics-*.json` artifacts into local JSON/CSV/Markdown/HTML. Runs lacking artifacts are `N/D` rather than zero; all metrics are diagnostics, not 0–10 fidelity grades.
+4. No autonomous end-to-end agent success claim unless a properly authenticated CLI independently reads a new reference, constructs assets/code, runs a browser, performs corrections and exports verified evidence.
+
+Read [CLI/font/metrics setup](references/cli-font-metrics-setup.md), [font manifest](examples/font-source-manifest.example.json) and [remaining TODOs](TODO.md).

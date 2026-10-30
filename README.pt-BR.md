@@ -202,3 +202,14 @@ Para ativar os verificadores opcionais: `python -m pip install -r requirements-a
 Os novos módulos incluem SSIM por região com máscaras limitadas, diagnóstico de fontes e ícones originais, tolerâncias de geometria, testes de toque e foco no Chromium, sugestões **não aplicadas** de CSS e sobreposição interativa original × captura. Todas as evidências são locais; nenhum asset proprietário é publicado automaticamente.
 
 O [TODO.md](TODO.md) distingue verificações implementadas das dependências que ainda exigem referências mobile/tablet/desktop de três projetos independentes, arquivos-fonte da Catty, acesso real aos agentes de programação e dispositivos iOS/Android. A ausência desses ambientes aparece como **NÃO TESTADO**, nunca como aprovação.
+
+
+## Preparação de CLIs, fontes e histórico — v1.8.0
+
+O preparo agora cobre ambientes isolados para Claude Code, Codex, OpenCode, Freebuff/Codebuff, Gemini CLI, Hermes e Cursor, com identificação de executável e diretório nativo da skill. O workflow manual **CLI runtime environment validation** permite verificar instalação real de pacotes npm no GitHub Actions. Instalação e `--version` **não são** invocação autenticada da skill.
+
+A conferência definitiva de fontes exige arquivos originais licenciados ou SHA-256 confirmado pelo proprietário. A ausência de fonte original é identificada como `ORIGINAL_UNAVAILABLE`. Nenhum arquivo de fonte é enviado ao repositório.
+
+A agregação de métricas é automática após cada CI e semanalmente. O relatório histórico é entregue em CSV, JSON, Markdown e HTML; dados antigos ausentes aparecem como **N/D**, não zero.
+
+[Manual completo](references/cli-font-metrics-setup.md) · [Pendências](TODO.md)

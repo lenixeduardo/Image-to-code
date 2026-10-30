@@ -1,0 +1,56 @@
+name: CLI runtime environment validation
+on:
+  workflow_dispatch:
+    inputs:
+      agent:
+        type: choice
+        description: Agent CLI to install and verify on isolated Linux runner (no model login)
+        required: true
+        options:
+          - claude-code
+          - codex
+          - opencode
+          - freebuff
+          - codebuff
+          - gemini-cli
+          - hermes
+          - cursor
+      install_native:
+        type: boolean
+        description: Attempt isolated native npm installation (Hermes/Cursor require manual official installers)
+        default: true
+permissions:
+  contents: read
+jobs:
+  cli-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check installation layout and CLI availability
+        env:
+          AGENT_NAME: ${{ inputs.agent }}
+          SHOULD_INSTALL: ${{ inputs.install_native }}
+        run: |
+          set -euo pipefail
+          case "$AGENT_NAME" in
+            claude-code|codex|opencode|freebuff|codebuff|gemini-cli|hermes|cursor) ;;
+            *) echo 'Unsupported agent'; exit 1 ;;
+          esac
+          if [ "$SHOULD_INSTALL" = true ]; then
+            python scripts/prepare_cli_environments.py --skill-root . --out artifacts/cli-runtime --agents "$AGENT_NAME" --check --install --allow-install-scripts
+          else
+            python scripts/prepare_cli_environments.py --skill-root . --out artifacts/cli-runtime --agents "$AGENT_NAME" --check
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cli-runtime-preflight-${{ inputs.agent }}
+          path: artifacts/cli-runtime/cli-preflight.json
+          retention-days: 21

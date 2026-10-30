@@ -80,3 +80,11 @@ New `scripts/audit_project_assets.py` scans static quoted paths in source and te
 - Added Chromium native-touch/focus fixture, WebKit availability reporting, agent CLI discovery without false runtime claims, executed negative controls, benchmark-reference coverage checker, reviewer-only CSS suggestions and local state dashboards.
 - Catty's three approved mobile states rendered in a browser and compared with local reference panels; screenshots, proprietary images and fonts were **not committed**. Local scores are diagnostic and do not prove universal fidelity.
 - The three-independent-project P0 benchmark, autonomous external coding-agent run, original Catty source layers, real external CLIs and physical Safari/Android device tests remain open pending external materials and execution environments. See TODO.md.
+
+
+## v1.8.0 — CLI environments, font provenance and CI trends
+
+- Prepared native skill directories for eight code agents and an opt-in isolated official npm CLI installation workflow (manual dispatch). Local execution did not find installed CLI binaries or provider credentials; model invocations remain NOT_AUTHENTICATED.
+- Added FontTools source-byte SHA-256 checks with an explicit ORIGINAL_UNAVAILABLE result, plus metadata. The approved Catty source font was not available, so definitive identity is not claimed.
+- Added CI job metric emission and an independent `workflow_run`/scheduled historical aggregator using read-only GitHub Actions API access. Exports JSON, CSV, MD and HTML without proprietary screenshots, tokens or font files. Old missing/expired artifacts produce N/D.
+- Unit tests cover missing/identical/different font bytes, CLI placement and historical-metrics integrity; a successful CLI version check is not autonomous image-to-code execution.

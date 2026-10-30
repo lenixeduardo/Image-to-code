@@ -237,3 +237,14 @@ Install optional advanced QA dependencies: `python -m pip install -r requirement
 A read-only [visual fidelity module](references/advanced-visual-qa.md) now supports region-level mask-aware SSIM, baseline/edge hints, strict component tolerances, HTML overlay comparison, original-icon vector/weight comparisons, browser typography and touch/focus audits, machine-readable CSS change proposals and linked dashboards. It **never** silently shifts images or alters source assets. Review suggestions before applying them.
 
 `TODO.md` distinguishes implemented QA from blocked evidence: three owner-approved reference projects, autonomous image-capable coding-agent execution, original hidden character layers, external agent CLIs and real iOS Safari/Android devices were not available in the workspace. The automated probe marks unavailable clients NOT_TESTED. Synthetic negative controls cannot establish real-world false-positive rates.
+
+
+## Runtime readiness, fonts and history — v1.8.0
+
+The skill can be **installed** in Claude Code, Codex, OpenCode, Freebuff/Codebuff, Gemini CLI, Hermes and Cursor workspaces. `scripts/prepare_cli_environments.py` creates isolated native skill folders and reports binary availability; run the `CLI runtime environment validation` GitHub Actions workflow manually to attempt CLI installation. No provider credentials are used, and successful installation is not end-to-end agent invocation.
+
+Definitive font identity uses original licensed font bytes or a trusted SHA-256 (`scripts/verify_font_identity.py`). When no source exists, the gate returns `ORIGINAL_UNAVAILABLE`; same-metric browser fallback is not sufficient. Never upload font files.
+
+The `Aggregate Image to Code QA history` workflow automatically collects current and historical QA counters as JSON/CSV/Markdown/HTML artifacts after the main CI and every Monday; expired/absent historical records remain `N/D`.
+
+See [setup and security notes](references/cli-font-metrics-setup.md) and [TODO](TODO.md).
