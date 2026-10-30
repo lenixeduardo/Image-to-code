@@ -13,6 +13,12 @@ A reusable **Agent Skill** for converting screenshots and mockups into working, 
 
 **Scope:** a skill defines the agent workflow; it is not a standalone AI model that automatically recognizes every font, retrieves images hidden behind cards, or implements a webpage without an image-capable coding agent. The included deterministic scripts support image inspection, selected asset crops, schema validation, browser captures, and pixel-difference evidence.
 
+## New: Catty regression protection and three review agents (v1.4.0)
+
+The skill now requires a **UI fidelity reviewer** (icons, loaded fonts and CTA geometry), an **asset forensics reviewer** (approved originals, baked-in glows, blur artifacts, visible paws), and an **independent acceptance reviewer**. Use real subagents when the host supports them; otherwise keep separate manual review reports and disclose the limitation.
+
+`scripts/audit_fidelity_contract.py` fails independently on regions with wrong pixel content or geometry, missing required region categories and changed/missing protected original assets. Use `examples/catty-analysis-2.contract.example.json` as a schema-shaped starting point, **not** as real Catty measurements. Replace all example coordinates and hashes with verified evidence. See [the strict review protocol](references/fidelity-gates.md). These are regression checks for the skill; they do not claim the Catty website itself is fixed or that real visual fidelity has been proven.
+
 ## What it produces
 
 - Layer map with positions, dimensions, opacity/stacking strategy and provenance.
