@@ -11,6 +11,12 @@ Uma **Agent Skill** para converter prints, mockups e imagens de referência em i
 
 > A skill precisa de um agente com capacidade de compreender imagens, acesso ao projeto e ferramentas de edição. Os scripts incluídos não são uma IA de visão e não conseguem recuperar conteúdo oculto por trás de outros elementos.
 
+## Novo: proteção contra regressões da Catty (v1.4.0)
+
+A skill agora exige três revisões: **agente de fidelidade da interface** (ícones, fonte carregada e tamanho do botão), **agente de integridade de assets** (originais aprovados, brilhos integrados à ilustração, borrões e pata visível) e **revisor independente de homologação**. Quando não houver ferramenta de subagentes, executar três análises separadas e declarar essa limitação.
+
+O novo `scripts/audit_fidelity_contract.py` bloqueia divergências de regiões críticas, diferenças geométricas e arquivos originais ausentes ou alterados (SHA-256). O exemplo `examples/catty-analysis-2.contract.example.json` traz **coordenadas fictícias**; é obrigatório substituí-las por medidas reais, assim como registrar os hashes dos assets aprovados. Leia o [protocolo de auditoria independente](references/fidelity-gates.md). Esses testes melhoram a skill; não representam correções já aplicadas ao aplicativo Catty.
+
 ## O que a skill faz
 
 1. **Background:** identifica cor, gradiente, textura, máscara, posição e comportamento de cada fundo e decide se deve recriar em CSS ou exportar uma imagem.

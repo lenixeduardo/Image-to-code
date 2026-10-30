@@ -31,6 +31,12 @@ python scripts/install.py --agent all --scope project --project /path/to/your-ap
 The agent-specific directories are `.claude/skills/`, `.opencode/skills/`, `.agents/skills/` (Freebuff and Codex), `.hermes/skills/`, `.cursor/skills/`, and `.gemini/skills/`. **Hermes project skills need `hermes skills trust`.** Windows: use `py -3` if needed. See the [compatibility matrix and installation reference](references/agent-compatibility.md) for global paths and verified source links. Native detection does **not** guarantee image understanding, browser access, or fidelity until tested in the chosen agent.
 
 
+## New: Catty regression protection and three review agents (v1.4.0)
+
+The skill now requires a **UI fidelity reviewer** (icons, loaded fonts and CTA geometry), an **asset forensics reviewer** (approved originals, baked-in glows, blur artifacts, visible paws), and an **independent acceptance reviewer**. Use real subagents when the host supports them; otherwise keep separate manual review reports and disclose the limitation.
+
+`scripts/audit_fidelity_contract.py` fails independently on regions with wrong pixel content or geometry, missing required region categories and changed/missing protected original assets. Use `examples/catty-analysis-2.contract.example.json` as a schema-shaped starting point, **not** as real Catty measurements. Replace all example coordinates and hashes with verified evidence. See [the strict review protocol](references/fidelity-gates.md). These are regression checks for the skill; they do not claim the Catty website itself is fixed or that real visual fidelity has been proven.
+
 ## What it produces
 
 - Layer map with positions, dimensions, opacity/stacking strategy and provenance.
