@@ -9,6 +9,18 @@
 
 [Leia em português (Brasil)](README.pt-BR.md)
 
+## Reference-guided scene regeneration (v1.5.0 — video workflow)
+
+For explicit recreation requests, **the screenshot crop is a reference image passed to the generator, not the final asset**. The agent examines the original screenshot and crop, writes a visually grounded detailed prompt, generates the **full cohesive scene without texts**, visually reviews identity/paws/glow, then adds the exact original typography **in a second pass**. On web pages, titles and CTAs are real HTML/CSS. On requested static posters, the second pass may be a text-overlay image edit. No duplicate CSS glow over a scene that already includes its highlights.
+
+1. `python scripts/prepare_generation_reference.py reference.png --box X Y W H --out artifacts/reference/component.png --manifest artifacts/reference/crop.json`
+2. Read [`references/reference-guided-regeneration.md`](references/reference-guided-regeneration.md) and author `artifacts/regeneration/scene-prompt.md`.
+3. Give **both images + prompt** to an image-capable agent, review each generation and keep the text-free scene master.
+4. Restore typography and interactions separately; validate the [`generation contract`](scripts/validate_generation_cycle.py) and screenshot comparisons.
+
+[Catty scene-only prompt example](examples/catty-hero-scene-prompt.md). **A detailed prompt cannot guarantee 100% identical output**; the mandatory acceptance reviews catch mismatched identity, added bows/hair/phones, clipped paws and baked duplicate glows. If the agent has no image generator, it must report the blocker rather than relabel a screenshot crop as regenerated art.
+
+
 A reusable **Agent Skill** for converting screenshots and mockups into working, responsive user interfaces. It starts by mapping **background → layout → components → typography → icons → images → fine details**, then builds the page and audits the rendered result.
 
 **Scope:** A skill defines an agent workflow, not a standalone computer-vision or image-generation model. Scripts assist with deterministic crops, schema validation, browser captures and visual QA.

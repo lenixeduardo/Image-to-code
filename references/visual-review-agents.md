@@ -14,3 +14,7 @@ Each review must have `status: pass | fail | unknown`, a concrete screenshot/ima
 The same four reviews apply to desktop, tablet and mobile, but visual **fidelity** is measured only for viewport(s) actually supplied in reference imagery. For side-by-side evidence, use the matching crop without stretching or rescaling components separately.
 
 Example: an existing image already carries coral light around a kitten; a new CSS layer creates fuzzy pink blobs, the source crop loses its paw, icons become thin outlined variants and a CTA is 4 px narrower but 1 px taller. Record three failures plus a CTA geometry deviation (not "larger CTA"), and stop before claiming 9.5/10.
+
+## Explicit recreation / video two-pass review
+
+When a user explicitly authorizes scene regeneration, the approved-source crop is used **only to condition image generation**. Audit the fresh scene-only image before overlaying text. Check preserved facial identity, natural paw continuation, the exact visible props (no new bows, human hair or phone), whole-scene coherent glow and no source text/labels. Then independently check the second-pass typography overlay against the reference. Use `references/reference-guided-regeneration.md` and `scripts/validate_generation_cycle.py`. Do not call a crop 'generated' and do not claim a 100% match based on prompt length.

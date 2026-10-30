@@ -17,6 +17,12 @@ A skill agora exige três revisões: **agente de fidelidade da interface** (íco
 
 O novo `scripts/audit_fidelity_contract.py` bloqueia divergências de regiões críticas, diferenças geométricas e arquivos originais ausentes ou alterados (SHA-256). O exemplo `examples/catty-analysis-2.contract.example.json` traz **coordenadas fictícias**; é obrigatório substituí-las por medidas reais, assim como registrar os hashes dos assets aprovados. Leia o [protocolo de auditoria independente](references/fidelity-gates.md). Esses testes melhoram a skill; não representam correções já aplicadas ao aplicativo Catty.
 
+## Novo: recriação de imagem guiada por referência (v1.5.0 — fluxo do vídeo)
+
+Quando o usuário pedir para **recriar** a imagem, a skill não poderá usar um recorte como asset final. Ela deverá primeiro analisar a imagem inteira e recortar o componente **somente para usar como referência do gerador**. O agente escreverá um prompt descritivo fiel, anexará **imagem original + recorte + prompt** à ferramenta de geração e produzirá **a cena inteira sem textos ou elementos de interface**. A iluminação já faz parte da cena. Depois, numa segunda etapa, restaurará os textos, fontes e posições: **HTML/CSS real** para webpages e edição sobre a imagem apenas para poster estático solicitado.
+
+O fluxo reprova patas cortadas, identidade modificada, acessórios inventados, borrões, brilho duplicado e palavras ilegíveis. Documenta as tentativas e bloqueia aprovação sem evidências. Ver [procedimento completo](references/reference-guided-regeneration.md), [prompt Catty](examples/catty-hero-scene-prompt.md) e [validador](scripts/validate_generation_cycle.py). Um prompt não garante reprodução 100% idêntica; a comparação visual é obrigatória. Sem ferramenta de geração, a skill informa a limitação e não troca geração por recorte.
+
 ## O que a skill faz
 
 1. **Background:** identifica cor, gradiente, textura, máscara, posição e comportamento de cada fundo e decide se deve recriar em CSS ou exportar uma imagem.

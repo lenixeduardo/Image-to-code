@@ -58,3 +58,10 @@ New `scripts/audit_project_assets.py` scans static quoted paths in source and te
 - Catty mobile at 390×844 was audited locally against its approved 390×844 normalized mockup. Painted CTA area: reference approx. 346×44 px; reconstruction 342×45 px (the latter is 4 px narrower and 1 px taller). Icons, typography, clipped paw, and added blurred lighting remain **not approved**. The image extraction used in the previous local preview contains unwanted remnants from the original screenshot; it must not be labeled a recovered original asset.
 - The Catty example and its private reference images are **not included** in the public skill repository. No changes to Catty's GitHub repository are part of this release.
 - Local tests: `python -m unittest discover -s tests -p 'test_*.py' -q` (32 passing) and `node --test tests/test_capture.mjs` (3 passing). GitHub CI must separately confirm after publication.
+
+## v1.5.0 — Video-demonstrated image regeneration workflow
+
+- The user's 19-second recording demonstrates **reference screenshot → forensic scene prompt → regenerate a complete clean scene (no text) → add text faithfully as a second pass**. The crop is a conditioning input and never the final asset.
+- Added `references/reference-guided-regeneration.md`, a Catty-specific scene-only prompt template, `scripts/prepare_generation_reference.py`, and `scripts/validate_generation_cycle.py` with negative tests for copied crops, missing reference images, lost paws, duplicate CSS glow, lack of typographic checks, untracked generations, and path traversal.
+- Full skill local verification: **45 Python tests** and **3 Node tests** passed.
+- This validates the deterministic controls and instructions **not** an external generator's actual adherence to a visual reference. No generator is bundled; real visual fidelity requires an image-capable agent and visual comparison. The Catty repository was not modified.

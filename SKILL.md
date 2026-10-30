@@ -13,7 +13,7 @@ The project attribution above identifies the skill's creator. It does not transf
 
 Convert a visual reference into working, accessible, responsive UI **without redesigning the source**. Work from large layers to small details. Preserve existing project conventions and user-provided assets. Never report inferred properties as measured facts.
 
-## Portable agent support (v1.4.0)
+## Portable agent support (v1.5.0)
 
 This is **one Agent Skills bundle** usable by Claude Code, OpenCode, Freebuff/Codebuff, Hermes, Codex, Cursor, Gemini CLI and other agents implementing the standard. Do not fork or simplify the workflow per vendor. See `references/agent-compatibility.md` for verified paths, activation behavior and limitations.
 
@@ -26,7 +26,7 @@ Agents must load the **entire installed folder** (not only `SKILL.md`) so relati
 1. Locate the reference image(s) and identify the target repository, framework, page route, and existing design system. Inspect the existing project before choosing new dependencies. Default to its current stack; use React/Next.js + TypeScript + CSS/Tailwind only if appropriate and not contradicted by the project.
 2. Prioritize user-approved images/assets and explicitly provided instructions over screenshot approximation, then reliable image evidence, then documented responsive inference.
 3. If only one viewport is provided, treat its geometry as **observed** only for that viewport. Infer other breakpoints and label them **inferred**; don't claim pixel-perfect fidelity on unseen screens.
-4. Never replace a real brand logo, person's photograph, illustrated subject, product shape, or supplied graphic with an invented one. Exact crops do not reconstruct portions concealed by UI.
+4. Never silently replace original branding or subject artwork. If the user explicitly requests recreation, use the two-pass image-to-prompt workflow in `references/reference-guided-regeneration.md`: the screenshot crop is a **visual generation reference only**, not the output. Treat reconstructed detail as generated rather than recovered original pixels.
 
 ## Mandatory pipeline (in this order)
 
@@ -47,10 +47,23 @@ Process strictly:
 3. **Components** — header/nav, hero, CTA, cards, buttons, fields, galleries, footer; identify states, constraints, focus/hover/tap behavior, ordering, semantics.
 4. **Typography** — text hierarchy, candidate font families, weights, sizes, line heights, letter spacing, transformations, wrapping and exact copy. An image alone usually cannot prove the original font family; label confidence and use only legally accessible fonts.
 5. **Icons and graphical assets** — preserve original icons or extract them with transparency if truly separable; if recreation is required use coherent SVG geometry and stroke. Don't silently substitute unrelated icons.
-6. **Images and illustrations** — identify original files if available, otherwise extract only unobscured source pixels. Record crop, focal point, object-fit, aspect ratio, overlays, responsive art direction.
+6. **Images and illustrations** — identify originals. For explicitly requested regeneration, condition the image generator on **full screenshot + component reference crop + forensic scene prompt** to make a complete text-free scene, then restore exact typography as a second pass. Otherwise extract unobscured pixels. Record crop/focal point/object-fit/art direction.
 7. **Foreground microdetails** — separators, borders, shadows, blur, glow, decorative marks, overlays and motion.
 
-Track everything in a **layer manifest** with observed/inferred/unknown classification. Use `scripts/export_layers.py` with explicit regions for safe pixel crops. Its outputs are screenshots fragments, not magically recovered originals. Do not invoke external image generators without a supported tool and permission/appropriate user context.
+Track a layer manifest with observed/inferred/unknown evidence. `scripts/export_layers.py` produces screenshot fragments, never recovered hidden source. In explicit regeneration mode use `scripts/prepare_generation_reference.py` to create a reference crop for the generator; require **both images + detailed scene prompt**. If no image generator exists, report a blocker rather than silently substituting a crop.
+
+### 2.5. Reference-guided TWO-PASS regeneration (mandatory when new image generation is requested)
+
+Follow the complete [reference-guided regeneration protocol](references/reference-guided-regeneration.md). **This is the exact video-demonstrated order:**
+
+1. Analyze the full reference and crop the relevant component **as a generation reference only**. Use `python scripts/prepare_generation_reference.py input.png --box X Y W H --out artifacts/reference/component.png --manifest artifacts/reference/crop.json`.
+2. Convert the image to a **forensic prompt grounded in both visual references**: same character/face/eyes/anatomy/paws/pose, coherent environment, built-in glow, precise framing, negative constraints and text-safe region. Do not guess invisible details as if seen. See `examples/catty-hero-scene-prompt.md`.
+3. Generate a **clean, complete SCENE first, WITHOUT text, UI, logo, phone, button or status indicators**. Use the full screenshot **and component crop** as reference images attached to the generation call. Do not crop the original pixels as the final scene. Rejected generations are not silently reused.
+4. Review the generated scene for subject identity, paws/limbs, lighting integrated in the rendered artwork, no cut seams, no new accessories and no ghost text. Iterate by targeted correction prompts until all gates pass or honestly report the limit. Never claim 100% exact identity just because a prompt is detailed.
+5. **SECOND PASS:** restore exact wording, font metrics, sizes and positions from the screenshot. Use accessible **HTML/CSS** for a functional webpage; for a separately requested static poster use a second image-editing pass, preserving the first-stage scene. Do not let typography generation regenerate or change the character.
+6. Write `artifacts/regeneration/contract.json` and run `python scripts/validate_generation_cycle.py --file artifacts/regeneration/contract.json --root .`. All six visual checks and final typography positioning must have grounded evidence. The validator checks the contract, not visual correctness itself.
+
+The crop is **never the final asset**, and native luminous ribbons/bloom must **not be duplicated with CSS haze or blurred clones**. Keep the original scene-only render and screenshot references for comparison. This branch of the workflow supersedes crop-only instructions when the user explicitly requests regeneration.
 
 ### 3. Produce a reproducible design specification
 

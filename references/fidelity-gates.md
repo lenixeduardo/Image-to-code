@@ -15,7 +15,7 @@ This is a **blocking** acceptance protocol for screenshot-to-code implementation
 **Agent B — Asset forensics (read-only during audit)**
 
 1. Inventory approved originals, screenshot derivatives and rendered images with SHA-256 hashes, pixel dimensions, alpha, provenance and crop lineage.
-2. **Classify glow as `baked-in`, `separate-layer` or `unknown` before implementing it.** If subject and glow are one composite, preserve the entire original. Never regenerate the cat, flood-fill away complex lighting, synthesize missing limbs, double-apply CSS halos, blur, drop-shadow or pseudo-element glows that create blurry bands.
+2. **Classify glow as `baked-in`, `separate-layer` or `unknown` before implementing it.** If subject and glow are one composite, preserve the entire original. In **preserve-original mode**, never regenerate the cat or synthesize hidden anatomy; for **user-authorized regeneration**, follow `references/reference-guided-regeneration.md` to generate a complete scene from both reference images without duplicated CSS glow.
 3. Check the entire illustration, including **Catty's paw**, at reference breakpoints. Review source crop, `object-fit`, `object-position`, `overflow`, transforms, masks and stacking. Inspect without overlays to diagnose clipping before modifying the source.
 4. Protect original assets with SHA-256 checksums. A crop extracted from a screenshot is **not** the original isolated image. If original missing, raise `BLOCKED: SOURCE_ASSET_MISSING`, do not claim pixel-perfect fidelity.
 5. Audit upper-glow, lower-glow and paw regions independently. Produce `artifacts/reviews/asset-forensics.md` with browser evidence and provenance.
@@ -55,3 +55,7 @@ Automated comparison uses color thresholds and user-specified bounds, not automa
 | Catty paw missing | Agent B plus dedicated paw reference/render crop, overflow and z-index check |
 
 This skill repository provides **quality gates**; it does not itself change the Catty application. Catty-specific UI and CSS corrections belong in `lenixeduardo/catty-minhaamiga` and require a separate browser-tested implementation.
+
+## Authorized regeneration exception (v1.5.0)
+
+Original-asset preservation/hash blocking remains mandatory where the user requests unchanged assets. When the user explicitly requests new generated artwork, follow the two-stage reference-guided protocol and `scripts/validate_generation_cycle.py`; the final image has its own provenance and is never a relabeled source crop. The complete scene remains text-free until the second text overlay pass.
