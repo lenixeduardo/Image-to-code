@@ -1,0 +1,4 @@
+interface:
+  display_name: "Image to Code — Layer First"
+  short_description: "Decompõe mockups em camadas, assets, componentes e telas responsivas"
+  default_prompt: "Use a skill image-to-code nesta imagem. Extraia camadas, documente fontes e medidas, implemente mobile/tablet/desktop e valide com capturas. Exiba mobile+tablet lado a lado e comparação desktop original+resultado lado a lado quando houver print desktop."

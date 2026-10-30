@@ -1,0 +1,17 @@
+{
+  "name": "image-to-code-skill-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "node scripts/capture.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.55.0"
+  },
+  "author": {
+    "name": "Lenix Eduardo Rotundo de Camargo",
+    "url": "https://github.com/lenixeduardo"
+  },
+  "license": "MIT",
+  "version": "1.0.4"
+}
