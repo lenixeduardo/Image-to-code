@@ -182,3 +182,19 @@ Never claim assets were created, screenshots captured, tests passed or a page wa
 5. Require per-state comparisons alongside the mobile+tablet presentation board. Inspect font/icons, image provenance and viewport inference. If any P0 errors remain, report them and do not claim ≥9.5/10.
 
 See [pixel-perfect QA methodology](references/pixel-perfect-qa.md), [state configuration](examples/visual-states.example.json) and [prioritized TODOs](TODO.md). This is a reproducible code-and-browser validation loop, **not** training of the agent model's weights.
+
+
+## Advanced project-wide quality gates (v1.7.0)
+
+Before claiming high fidelity, run **independent** checks for masked regional similarity, component layout, font and icon provenance, touch/focus and agent runtime availability. See [advanced QA reference](references/advanced-visual-qa.md) and [remaining TODOs](TODO.md).
+
+- `scripts/advanced_visual_qa.py`: mask-aware SSIM, guarded regions, untouched-reference split-overlay, advisory edge alignment, and reviewer-only CSS suggestions. The global mask maximum is 8%; critical face/CTA areas cannot be masked.
+- `scripts/validate_component_geometry.py`: default semantic tolerances (critical 3px, high 5px, normal 9px, decorative 14px), with clipping an unconditional failure.
+- `scripts/audit_typography_icons.py`: original licensed font metadata / icon SVG outline-filling-baseline comparison. No source file = unresolved, not magically recovered.
+- `scripts/browser_font_audit.py`: effective computed font, line count, size/weight and possible fallback in Chromium; it cannot prove same-metric typeface identity.
+- `scripts/browser_compat_qa.py`: actual Chromium device-emulated tap/swipe/focus, WebKit when installed; SKIPPED is never PASS.
+- `scripts/probe_agents.py`: lists installed supported coding agent CLIs. Installation paths are not evidence of working agent invocation.
+- `scripts/negative_controls.py` and `scripts/benchmark_evidence.py`: measured negative tests and strict 3-independent-project reference coverage gate.
+- `scripts/build_state_dashboard.py`: linked local states/heatmaps/interactive overlays with no proprietary uploads.
+
+Do not assign a completed P0 to three separate projects unless each has independently approved, non-derived mobile/tablet/desktop references and real-browser evidence. An image-capable coding agent's autonomous pipeline and original flattened Catty layers also require direct proof. Never upload proprietary screenshots or font files to a public CI artifact.

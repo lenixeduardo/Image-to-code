@@ -228,3 +228,12 @@ node scripts/validate_visual_states.mjs examples/visual-states.example.json
 Calibration creates per-state reference/render side-by-side comparisons, heatmaps, SSIM (optional), RGB MAE and a report. Browser states must prove the full device, subject and buttons are visible, not clipped by an ancestor. Size normalization is opt-in and disclosed. SSIM is **diagnostic**, not a fidelity score, and exact recovery of occluded assets cannot be claimed.
 
 See [validation procedure](references/pixel-perfect-qa.md) and [open improvements](TODO.md). Source mockups must not be committed to a public repository without authorization.
+
+
+## Advanced quality validation (v1.7.0)
+
+Install optional advanced QA dependencies: `python -m pip install -r requirements-advanced.txt`. Run `python -m unittest discover -s tests` and `python scripts/negative_controls.py --out artifacts/negative-controls.json`.
+
+A read-only [visual fidelity module](references/advanced-visual-qa.md) now supports region-level mask-aware SSIM, baseline/edge hints, strict component tolerances, HTML overlay comparison, original-icon vector/weight comparisons, browser typography and touch/focus audits, machine-readable CSS change proposals and linked dashboards. It **never** silently shifts images or alters source assets. Review suggestions before applying them.
+
+`TODO.md` distinguishes implemented QA from blocked evidence: three owner-approved reference projects, autonomous image-capable coding-agent execution, original hidden character layers, external agent CLIs and real iOS Safari/Android devices were not available in the workspace. The automated probe marks unavailable clients NOT_TESTED. Synthetic negative controls cannot establish real-world false-positive rates.

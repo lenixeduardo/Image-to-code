@@ -193,3 +193,12 @@ node scripts/validate_visual_states.mjs examples/visual-states.example.json
 São geradas comparações original × HTML/CSS por tela, mapas de diferenças, SSIM (opcional), erro médio RGB e relatório. O navegador reprova elementos obrigatórios cortados, escondidos por containers ou fora da viewport. O redimensionamento da referência é **explícito**, não automático. SSIM não é nota de 0 a 10, e partes ocultas de assets só podem ser recuperadas exatamente com os originais.
 
 Consulte [procedimento técnico](references/pixel-perfect-qa.md) e [TODOs priorizados](TODO.md). Mockups privados ficam fora do repositório público.
+
+
+## Auditoria avançada por região — v1.7.0
+
+Para ativar os verificadores opcionais: `python -m pip install -r requirements-advanced.txt`. Execute `python scripts/negative_controls.py --out artifacts/negative-controls.json` e consulte [o procedimento técnico](references/advanced-visual-qa.md).
+
+Os novos módulos incluem SSIM por região com máscaras limitadas, diagnóstico de fontes e ícones originais, tolerâncias de geometria, testes de toque e foco no Chromium, sugestões **não aplicadas** de CSS e sobreposição interativa original × captura. Todas as evidências são locais; nenhum asset proprietário é publicado automaticamente.
+
+O [TODO.md](TODO.md) distingue verificações implementadas das dependências que ainda exigem referências mobile/tablet/desktop de três projetos independentes, arquivos-fonte da Catty, acesso real aos agentes de programação e dispositivos iOS/Android. A ausência desses ambientes aparece como **NÃO TESTADO**, nunca como aprovação.

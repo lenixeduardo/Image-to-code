@@ -11,13 +11,27 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install tools
-        run: python -m pip install -r requirements.txt
+        run: python -m pip install -r requirements-advanced.txt
       - name: Validate example spec
         run: python scripts/validate_spec.py examples/design-spec.example.json
       - name: Verify multi-agent installer syntax
         run: python -m py_compile scripts/install.py
       - name: Run synthetic tests
         run: python -m unittest discover -s tests -v
+      - name: Negative controls, agent probe and evidence coverage
+        run: |
+          python scripts/negative_controls.py --out artifacts/negative-controls.json
+          python scripts/probe_agents.py --out artifacts/agent-probe.json
+          python scripts/benchmark_evidence.py --manifest examples/benchmark-coverage.example.json --out artifacts/benchmark-coverage.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: advanced-qa-metadata
+          retention-days: 14
+          path: |
+            artifacts/negative-controls.json
+            artifacts/agent-probe.json
+            artifacts/benchmark-coverage.json
       - name: Syntax-check Python scripts
         run: python -m compileall -q scripts
       - uses: actions/setup-node@v4
@@ -70,3 +84,27 @@ jobs:
           name: browser-integration-evidence
           path: artifacts/browser-*/
 
+
+  browser-advanced:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser audit dependencies
+        run: |
+          python -m pip install -r requirements-advanced.txt 'playwright==1.55.0'
+          python -m playwright install --with-deps chromium
+      - name: Real mobile touch, focus and font audit
+        run: |
+          python scripts/browser_compat_qa.py --config examples/browser-compat-fixture.json --out artifacts/mobile-compat.json
+          python scripts/browser_font_audit.py --config examples/font-audit-fixture.json --out artifacts/browser-font-audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-font-qa-metadata
+          retention-days: 14
+          path: |
+            artifacts/mobile-compat.json
+            artifacts/browser-font-audit.json

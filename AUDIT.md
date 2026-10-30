@@ -72,3 +72,11 @@ New `scripts/audit_project_assets.py` scans static quoted paths in source and te
 - Added browser visibility/geometry checks that reject clipped required elements, overflow and missing images even when dialogue text and navigation tests pass; CI positive and negative fixture cases.
 - New `TODO.md` separates completed infrastructure from unverified agent performance, font matching, source-layer recovery and visual benchmarks.
 - Source screenshots for Catty remain outside the public repository. These tooling checks are **not** proof of automatic 9.5/10 reconstruction quality.
+
+
+## v1.7.0 — Advanced QA / backlog execution
+
+- Added read-only region and mask-aware perceptual analysis, advisory alignment, strict semantic component geometry thresholds, source-based SVG/font audits and browser font/wrap checks.
+- Added Chromium native-touch/focus fixture, WebKit availability reporting, agent CLI discovery without false runtime claims, executed negative controls, benchmark-reference coverage checker, reviewer-only CSS suggestions and local state dashboards.
+- Catty's three approved mobile states rendered in a browser and compared with local reference panels; screenshots, proprietary images and fonts were **not committed**. Local scores are diagnostic and do not prove universal fidelity.
+- The three-independent-project P0 benchmark, autonomous external coding-agent run, original Catty source layers, real external CLIs and physical Safari/Android device tests remain open pending external materials and execution environments. See TODO.md.
