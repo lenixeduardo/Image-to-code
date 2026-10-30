@@ -9,9 +9,27 @@
 
 [Leia em português (Brasil)](README.pt-BR.md)
 
-A reusable **Agent Skill** for converting screenshots and mockups into working, responsive user interfaces. It starts by mapping **background → layout → components → typography → icons → images → fine details**, then builds the page and audits the actual rendered result.
+A reusable **Agent Skill** for converting screenshots and mockups into working, responsive user interfaces. It starts by mapping **background → layout → components → typography → icons → images → fine details**, then builds the page and audits the rendered result.
 
-**Scope:** a skill defines the agent workflow; it is not a standalone AI model that automatically recognizes every font, retrieves images hidden behind cards, or implements a webpage without an image-capable coding agent. The included deterministic scripts support image inspection, selected asset crops, schema validation, browser captures, and pixel-difference evidence.
+**Scope:** A skill defines an agent workflow, not a standalone computer-vision or image-generation model. Scripts assist with deterministic crops, schema validation, browser captures and visual QA.
+
+## Install for any coding agent
+
+One canonical [Agent Skills](https://agentskills.io/) bundle works with **Claude Code, OpenCode, Freebuff/Codebuff, Hermes, Codex, Cursor, Gemini CLI**, and other compatible code agents. The installer uses only Python 3.10+ standard library; it preserves existing installations unless `--force` is explicitly supplied.
+
+```bash
+git clone https://github.com/lenixeduardo/image-to-code.git
+cd image-to-code
+python scripts/install.py --agent all --scope project --project /path/to/your-app
+# Alternatively install per-user for selected agents:
+python scripts/install.py --agent claude,opencode,freebuff,hermes --scope global
+# Verify or back up before replacing:
+python scripts/install.py --agent all --scope project --project /path/to/your-app --verify
+python scripts/install.py --agent all --scope project --project /path/to/your-app --force
+```
+
+The agent-specific directories are `.claude/skills/`, `.opencode/skills/`, `.agents/skills/` (Freebuff and Codex), `.hermes/skills/`, `.cursor/skills/`, and `.gemini/skills/`. **Hermes project skills need `hermes skills trust`.** Windows: use `py -3` if needed. See the [compatibility matrix and installation reference](references/agent-compatibility.md) for global paths and verified source links. Native detection does **not** guarantee image understanding, browser access, or fidelity until tested in the chosen agent.
+
 
 ## What it produces
 
@@ -23,24 +41,11 @@ A reusable **Agent Skill** for converting screenshots and mockups into working, 
 - **Mandatory inline chat presentation:** mobile + tablet side-by-side; if the reference is a desktop UI screenshot, original desktop + rebuilt desktop side-by-side. Never replace these with links only.
 - An honest manual fidelity score where a reference exists; goal ≥9.5/10, **not** an automated claim based solely on pixel similarity.
 
-## Install in Codex or a compatible Agent Skills runner
+## Compatibility and invocation
 
-As a globally discoverable skill:
+Claude Code: `/image-to-code`; Codex: `$image-to-code`; Freebuff/Codebuff: `/skill:image-to-code`; Hermes: `/image-to-code`; Cursor: `/image-to-code` (or `@image-to-code`). For OpenCode and Gemini CLI, request that the agent load the `image-to-code` skill using their native skill-discovery interface. Platform CLI commands and permissions may vary by version; see [verified agent documentation](references/agent-compatibility.md).
 
-```bash
-git clone https://github.com/lenixeduardo/image-to-code.git image-to-code
-mkdir -p ~/.agents/skills
-cp -R image-to-code ~/.agents/skills/image-to-code
-```
-
-For one project, copy into the repository:
-
-```bash
-mkdir -p .agents/skills/image-to-code
-cp -R /path/to/image-to-code/{SKILL.md,agents,references,scripts,examples,requirements.txt} .agents/skills/image-to-code/
-```
-
-The host needs to support loading Agent Skills and have access to your visual reference and target code repository. In Codex, invoke `$image-to-code` or select it from skills; in other compatible hosts, use their invocation method.
+If the agent cannot read images or run a local browser, it can still inspect the repository and produce a documented partial result, but it must **not** report screenshot fidelity as verified. The installer does not deploy applications, change providers or automatically invoke the agent.
 
 ## Example agent request
 
@@ -183,3 +188,8 @@ MIT for the code and instructions in this repository. It does not confer rights 
 ## Asset consistency for existing websites / Integridade de assets
 
 Run `python scripts/audit_project_assets.py --project /path/to/project --out artifacts/project-assets.json` to detect references to missing images before and after generation. A fallback image rendering successfully does **not** establish that the original asset was recovered. Dynamic imports or remote assets require manual inspection.
+
+
+## Visual fidelity review gate
+
+The four independent review categories (icons, typography/controls, character anatomy, baked-in lighting/composition) are documented in [`references/visual-review-agents.md`](references/visual-review-agents.md). Before claiming a pixel-fidelity score, provide real visual evidence and validate `artifacts/visual-review.json` with `python scripts/validate_visual_review.py --file artifacts/visual-review.json --root .`. Browser smoke checks alone never prove pixel accuracy.

@@ -13,6 +13,14 @@ The project attribution above identifies the skill's creator. It does not transf
 
 Convert a visual reference into working, accessible, responsive UI **without redesigning the source**. Work from large layers to small details. Preserve existing project conventions and user-provided assets. Never report inferred properties as measured facts.
 
+## Portable agent support (v1.4.0)
+
+This is **one Agent Skills bundle** usable by Claude Code, OpenCode, Freebuff/Codebuff, Hermes, Codex, Cursor, Gemini CLI and other agents implementing the standard. Do not fork or simplify the workflow per vendor. See `references/agent-compatibility.md` for verified paths, activation behavior and limitations.
+
+Install into the chosen agent's skills directory with `python scripts/install.py --agent <name> --scope project --project /path/to/app` or `--scope global`. Multiple agents can be installed together with `--agent all`; the installer detects shared `.agents/skills/` targets, doesn't overwrite existing installations without `--force`, preserves backups, and supports `--dry-run` and `--verify`.
+
+Agents must load the **entire installed folder** (not only `SKILL.md`) so relative `references/` and `scripts/` work. Only claim a platform was actually executed end-to-end if its CLI was tested. Installation tests validate the filesystem contract, not model understanding, code quality, or screenshot fidelity.
+
 ## Inputs and precedence
 
 1. Locate the reference image(s) and identify the target repository, framework, page route, and existing design system. Inspect the existing project before choosing new dependencies. Default to its current stack; use React/Next.js + TypeScript + CSS/Tailwind only if appropriate and not contradicted by the project.
@@ -59,7 +67,23 @@ Include:
 
 Use fluid CSS (`clamp`, `%`, `minmax`, `aspect-ratio`, `object-fit`) where it matches source evidence. Avoid arbitrary fixed heights and absolute positioning for primary layout; use absolute positioning only for genuinely overlaid elements. Validate spec with `python scripts/validate_spec.py artifacts/design-spec.json`.
 
-### 4. Export and organize assets
+### 3.5. Independent visual risk reviews (mandatory for fidelity claims)
+
+Use four dedicated reviewer roles described in `references/visual-review-agents.md`: **icons**, **typography and controls**, **subject integrity**, and **lighting/composition**. Agents with subagent support may run them independently; without that capability, execute them sequentially and do not claim multiple AI agents executed. Use the same viewport and keep evidence files. Detect blurry duplicate glows from image artwork with baked-in highlights and any cropped paw/ear/anatomy. Do not approve an approximate icon, unspecified font, or asset with ghost text.
+
+Before claiming acceptance, write `artifacts/visual-review.json` with these four review entries and run `python scripts/validate_visual_review.py --file artifacts/visual-review.json --root /path/to/project`. Non-pass/unknown status means **not approved** regardless of passing Playwright tests. This gate checks review records, not human judgment quality.
+
+### 4. Export and organize assets — **HARD GATE BEFORE ANY PAGE CODE**
+
+**Order is mandatory: IMAGE → COMPLETE ASSET KIT → VERIFIED MANIFEST → COMPONENT/TYPE SPECS → IMPLEMENTATION → VISUAL QA.**
+
+Do not write JSX, HTML, CSS, layout components, visual mockup markup, or placeholders before the asset kit is assembled and inspected. This applies to a desktop screenshot, mobile mockup, multi-panel image, and pre-existing codebases alike.
+
+1. **First create every required source asset** in the intended layer order: (a) full section background including its genuine visible illumination and textures, (b) isolated subject/character wherever recoverable, (c) logo and wordmark, (d) every custom icon, (e) illustrations and product photographs, (f) complete phone/device mockup **including its visible internal screen UI** and, where appropriate, separately extractable screen items, (g) buttons/badges/decorative graphics only where they cannot be faithfully rendered with CSS.
+2. **Audit actual provenance and occlusion.** A flattened screenshot cannot reveal the concealed paw behind a phone, clean background behind text, unseen screen content, or exact licensed font binaries. Mark such detail as unrecoverable or inferred; never assert that a reconstructed layer is the exact hidden original. Preserve approved art rather than redrawing it. A decorative phone raster is not a working phone interface: build separate interactive screen components only when required by the task.
+3. **Before any frontend implementation**, publish a local transparent/neutral-background **asset-contact-sheet** showing the logo, background, subject, icons, and device/screen assets. Inspect for ghost text, hard rectangular edges, accidental blurring, clipped paws, incorrect symbols, or missing alpha channels. Correct the assets first; do not push the problem downstream into CSS.
+4. Write `artifacts/assets-ready.json` with `stage: assets_before_code`, `required_roles`, `assets` entries `{role,path,status,sha256,provenance}`; status is `extracted`, `reused`, `reconstructed`, or `unrecoverable` (plus reason). Run `python scripts/validate_asset_gate.py --manifest artifacts/assets-ready.json --root /path/to/project` and **do not enter step 5 unless it passes**. If missing assets cannot be recovered, disclose the blocker and obtain a deliberate fallback choice rather than claiming pixel-perfect completion.
+5. Record font family candidates, weights, letter spacing and breakpoint geometry as independent specifications **before** implementing typography. A rasterized label embedded in a screenshot is not a legally distributable font or selectable text.
 
 **Mandatory source-asset audit for an existing project:** run `python scripts/audit_project_assets.py --project /path/to/project --out artifacts/project-assets.json` before implementation, and repeat it before acceptance. This catches static references to missing images even if an `onError` fallback makes the page appear visually intact. Missing approved source assets are blockers; do not silently fabricate, replace, or mark the output pixel-perfect.
 
@@ -93,7 +117,7 @@ Read `references/responsive-rules.md` and `references/implementation-guide.md` d
 Return a project-ready implementation, **not just a text prompt**:
 
 - Actual source-code changes and any required extracted assets, or an explicit blocker where tool support is absent.
-- `artifacts/design-spec.json`, `artifacts/asset-manifest.json`, `artifacts/assumptions.md`, and an audit report.
+- `artifacts/design-spec.json`, `artifacts/asset-manifest.json`, **`artifacts/assets-ready.json` (asset-first gate)**, `artifacts/assumptions.md`, and an audit report.
 - A concise component tree, font scale in px/rem, design tokens, image/icon manifest, and breakpoint table.
 - **Mandatory chat-visible images:** one mobile + tablet side-by-side board; one desktop original + reconstruction side-by-side board when the user supplied a desktop-interface screenshot. For a non-desktop reference, show the desktop preview separately. These must render directly in the conversation, with links only as secondary downloads. Keep both panels readable, labeled, entirely visible and undistorted. Record reference cropping/viewport differences; do not present inferred layouts as faithfully matched.
 - Screenshot evidence for mobile/tablet/desktop, test/build outcomes, and a separate score per reference viewport.
@@ -102,6 +126,8 @@ Return a project-ready implementation, **not just a text prompt**:
 Never claim assets were created, screenshots captured, tests passed or a page was deployed unless those outputs actually exist. Do not treat analysis-only completion as completed image-to-code implementation.
 
 ## Supporting files
+
+- [Multi-agent installation and compatibility](references/agent-compatibility.md)
 
 - [Layer decomposition and extraction](references/layer-analysis.md)
 - [Design spec JSON schema](references/design-spec.schema.json)

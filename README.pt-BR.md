@@ -35,17 +35,40 @@ Uma **Agent Skill** para converter prints, mockups e imagens de referência em i
 - `artifacts/audit/...`: sobreposição e diferenças, além de relatório.
 - Código funcional no projeto de destino, com componentes reutilizáveis.
 
-## Como instalar
+## Instalação em Claude Code, Freebuff, Hermes, OpenCode e outros agentes
 
-Clone o repositório da skill e copie para o diretório global das skills:
+**Um único pacote, sem versões diferentes para cada agente.** O instalador copia o `SKILL.md` com seus scripts, referências e assets para o diretório correto. Funciona em Linux, macOS e Windows (Python 3.10+).
+
+| Agente | Diretório por projeto |
+| --- | --- |
+| Claude Code | `.claude/skills/image-to-code/` |
+| OpenCode | `.opencode/skills/image-to-code/` |
+| Freebuff / Codebuff | `.agents/skills/image-to-code/` |
+| Hermes Agent | `.hermes/skills/image-to-code/` |
+| Codex | `.agents/skills/image-to-code/` |
+| Cursor | `.cursor/skills/image-to-code/` |
+| Gemini CLI | `.gemini/skills/image-to-code/` |
+| Outros (Agent Skills) | `.agents/skills/image-to-code/`, se suportado |
 
 ```bash
-git clone https://github.com/lenixeduardo/image-to-code.git image-to-code
-mkdir -p ~/.agents/skills
-cp -R image-to-code ~/.agents/skills/image-to-code
+git clone https://github.com/lenixeduardo/image-to-code.git
+cd image-to-code
+
+# Instalar em todos os agentes dentro de um projeto já existente
+python scripts/install.py --agent all --scope project --project /caminho/meu-site
+
+# Exemplo: Claude Code + OpenCode + Freebuff + Hermes, globalmente
+python scripts/install.py --agent claude,opencode,freebuff,hermes --scope global
+
+# Simular, validar, atualizar com backup
+python scripts/install.py --agent all --project /caminho/meu-site --dry-run
+python scripts/install.py --agent all --project /caminho/meu-site --verify
+python scripts/install.py --agent all --project /caminho/meu-site --force
 ```
 
-Ou copie todo o conteúdo da skill para `.agents/skills/image-to-code/` dentro do repositório do aplicativo, para que o Codex a encontre no projeto.
+No Windows, pode usar `py -3` no lugar de `python`. `--scope global` instala no perfil do usuário. `--force` preserva o diretório anterior como backup; nada é sobrescrito silenciosamente. A instalação de Freebuff, Codex e outros agentes compatíveis com `.agents/skills/` é compartilhada, sem criar três cópias. **Hermes exige `hermes skills trust` dentro do projeto para carregar skills locais.** O código da skill não inclui modelos de visão: o agente escolhido precisa receber a imagem e ter ferramentas para editar os arquivos.
+
+Veja [compatibilidade completa e comandos por agente](references/agent-compatibility.md).
 
 ## Exemplo de comando para o agente
 
@@ -136,3 +159,8 @@ Documento detalhado: [Padrão de demonstração](references/presentation-standar
 ## Asset consistency for existing websites / Integridade de assets
 
 Run `python scripts/audit_project_assets.py --project /path/to/project --out artifacts/project-assets.json` to detect references to missing images before and after generation. A fallback image rendering successfully does **not** establish that the original asset was recovered. Dynamic imports or remote assets require manual inspection.
+
+
+## Revisão visual obrigatória
+
+Os quatro revisores de qualidade (ícones, tipografia/botões, anatomia dos personagens, iluminação já presente no asset) estão descritos em [`references/visual-review-agents.md`](references/visual-review-agents.md). Antes de declarar fidelidade, gere evidências e valide `artifacts/visual-review.json` com `python scripts/validate_visual_review.py --file artifacts/visual-review.json --root .`. Renderizar sem erros não prova fidelidade.
