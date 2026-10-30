@@ -211,3 +211,20 @@ Run `python scripts/audit_project_assets.py --project /path/to/project --out art
 ## Visual fidelity review gate
 
 The four independent review categories (icons, typography/controls, character anatomy, baked-in lighting/composition) are documented in [`references/visual-review-agents.md`](references/visual-review-agents.md). Before claiming a pixel-fidelity score, provide real visual evidence and validate `artifacts/visual-review.json` with `python scripts/validate_visual_review.py --file artifacts/visual-review.json --root .`. Browser smoke checks alone never prove pixel accuracy.
+
+
+## Pixel-perfect multi-state quality gates — v1.6.0
+
+Reference screenshots with multiple app states are evaluated one screen at a time, not just by text assertions. The Catty case showed why: the navigation test passed while the phone frame and UI controls were clipped.
+
+```bash
+python -m pip install -r requirements-pixel-perfect.txt
+python scripts/calibrate_pixel_perfect.py --reference mockup-triptych.png --columns 3 \
+  --render artifacts/step-1.png --render artifacts/step-2.png \
+  --render artifacts/step-3.png --normalize-reference --out artifacts/pixel-qa
+node scripts/validate_visual_states.mjs examples/visual-states.example.json
+```
+
+Calibration creates per-state reference/render side-by-side comparisons, heatmaps, SSIM (optional), RGB MAE and a report. Browser states must prove the full device, subject and buttons are visible, not clipped by an ancestor. Size normalization is opt-in and disclosed. SSIM is **diagnostic**, not a fidelity score, and exact recovery of occluded assets cannot be claimed.
+
+See [validation procedure](references/pixel-perfect-qa.md) and [open improvements](TODO.md). Source mockups must not be committed to a public repository without authorization.

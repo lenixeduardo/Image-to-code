@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const [positivePath,negativePath]=process.argv.slice(2);
+const positive=JSON.parse(fs.readFileSync(positivePath,'utf8'));
+const negative=JSON.parse(fs.readFileSync(negativePath,'utf8'));
+assert.equal(positive.passed,true,'valid UI should pass browser-state gate');
+assert.equal(negative.passed,false,'clipped UI should not pass browser-state gate');
+assert.equal(positive.checks.length,2);
+assert.equal(negative.checks.length,1);
+assert.ok(negative.checks[0].conditions.some(x=>x.clipped || !x.passed),'clipped condition must be reported');
+console.log('Browser state geometry: valid passes; clipped phone rejected');

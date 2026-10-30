@@ -1,0 +1,6 @@
+{
+  "url":"http://127.0.0.1:4173/clipped.html",
+  "out":"artifacts/browser-clipped",
+  "viewports":[{"width":390,"height":844}],
+  "states":[{"name":"clipped-phone-must-fail","clicks":[],"mustFit":["main", ".phone-frame", ".phone-frame button"]}]
+}

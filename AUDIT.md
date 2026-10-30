@@ -65,3 +65,10 @@ New `scripts/audit_project_assets.py` scans static quoted paths in source and te
 - Added `references/reference-guided-regeneration.md`, a Catty-specific scene-only prompt template, `scripts/prepare_generation_reference.py`, and `scripts/validate_generation_cycle.py` with negative tests for copied crops, missing reference images, lost paws, duplicate CSS glow, lack of typographic checks, untracked generations, and path traversal.
 - Full skill local verification: **45 Python tests** and **3 Node tests** passed.
 - This validates the deterministic controls and instructions **not** an external generator's actual adherence to a visual reference. No generator is bundled; real visual fidelity requires an image-capable agent and visual comparison. The Catty repository was not modified.
+
+## v1.6.0 — Multi-state pixel-perfect regression gates (Catty validation)
+
+- Added deterministic per-screen reference-vs-browser calibration including pair images, heatmaps, MAE, mismatch fraction and optional SSIM, with an explicit reference-normalization control and baseline comparison.
+- Added browser visibility/geometry checks that reject clipped required elements, overflow and missing images even when dialogue text and navigation tests pass; CI positive and negative fixture cases.
+- New `TODO.md` separates completed infrastructure from unverified agent performance, font matching, source-layer recovery and visual benchmarks.
+- Source screenshots for Catty remain outside the public repository. These tooling checks are **not** proof of automatic 9.5/10 reconstruction quality.

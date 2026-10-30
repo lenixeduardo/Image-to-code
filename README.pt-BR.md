@@ -176,3 +176,20 @@ Run `python scripts/audit_project_assets.py --project /path/to/project --out art
 ## Revisão visual obrigatória
 
 Os quatro revisores de qualidade (ícones, tipografia/botões, anatomia dos personagens, iluminação já presente no asset) estão descritos em [`references/visual-review-agents.md`](references/visual-review-agents.md). Antes de declarar fidelidade, gere evidências e valide `artifacts/visual-review.json` com `python scripts/validate_visual_review.py --file artifacts/visual-review.json --root .`. Renderizar sem erros não prova fidelidade.
+
+
+## Validação pixel-perfect por estado — v1.6.0
+
+A homologação da Catty mostrou um falso positivo: os textos e a navegação estavam corretos, mas o celular e os controles inferiores ficaram cortados. A skill agora exige **captura e comparação de cada tela** e uma verificação de geometria no navegador.
+
+```bash
+python -m pip install -r requirements-pixel-perfect.txt
+python scripts/calibrate_pixel_perfect.py --reference mockup-triptych.png --columns 3 \
+  --render artifacts/tela-1.png --render artifacts/tela-2.png \
+  --render artifacts/tela-3.png --normalize-reference --out artifacts/pixel-qa
+node scripts/validate_visual_states.mjs examples/visual-states.example.json
+```
+
+São geradas comparações original × HTML/CSS por tela, mapas de diferenças, SSIM (opcional), erro médio RGB e relatório. O navegador reprova elementos obrigatórios cortados, escondidos por containers ou fora da viewport. O redimensionamento da referência é **explícito**, não automático. SSIM não é nota de 0 a 10, e partes ocultas de assets só podem ser recuperadas exatamente com os originais.
+
+Consulte [procedimento técnico](references/pixel-perfect-qa.md) e [TODOs priorizados](TODO.md). Mockups privados ficam fora do repositório público.

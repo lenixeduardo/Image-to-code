@@ -169,3 +169,16 @@ Never claim assets were created, screenshots captured, tests passed or a page wa
 - Never assign a perfect 10/10 to the skill or a reconstructed page when end-to-end browser execution is blocked or when referenced viewports and fonts cannot be validated. Document unresolved gaps by severity.
 
 - For desktop screenshot QA, invoke `scripts/present_results.py` with `--require-matching-desktop` to make mismatched dimensions a failed acceptance gate, not just a warning.
+
+
+## Multi-state pixel-perfect acceptance (v1.6.0 — REQUIRED)
+
+**Do not approve image-to-code merely because expected text exists or the modal opens.** The Catty validation previously passed text/navigation tests while a device frame, character and bottom controls were clipped.
+
+1. Inventory every approved screenshot state (including character expressions, chat steps, bottom navigation, sound controls and original copy). Reproduce **each state** as accessible UI and capture it in a real browser.
+2. Compare reference and actual render with `scripts/calibrate_pixel_perfect.py`. Use equally sized images by default. For a multi-screen composite, use `--columns N --normalize-reference` only after explicitly recording the derived dimensions, and never silently resize. Inspect per-state paired PNGs and heatmaps, optional SSIM, RGB MAE and baseline deltas. No diagnostic pixel metric is a 0–10 rating.
+3. Configure `scripts/validate_visual_states.mjs` with real viewports, state click sequences, and `mustFit` selectors for the entire phone frame, character/paws, main CTA, bottom controls and other visible critical nodes. An off-screen or clipped element **fails** even if its text is present and all other tests pass.
+4. Preserve authentic subject anatomy, full original art lighting and icon styles; match typographic wrap and exact text. Do not replace lost paws with blur/gradients or claim pixels hidden behind text can be recovered without source artwork.
+5. Require per-state comparisons alongside the mobile+tablet presentation board. Inspect font/icons, image provenance and viewport inference. If any P0 errors remain, report them and do not claim ≥9.5/10.
+
+See [pixel-perfect QA methodology](references/pixel-perfect-qa.md), [state configuration](examples/visual-states.example.json) and [prioritized TODOs](TODO.md). This is a reproducible code-and-browser validation loop, **not** training of the agent model's weights.

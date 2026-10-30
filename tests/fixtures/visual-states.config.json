@@ -1,0 +1,6 @@
+{
+  "url":"http://127.0.0.1:4173/",
+  "out":"artifacts/browser-states",
+  "viewports":[{"width":390,"height":844},{"width":820,"height":1180}],
+  "states":[{"name":"positive","clicks":[],"mustFit":["main","h1"]}]
+}

@@ -24,9 +24,9 @@ jobs:
         with:
           node-version: '22'
       - name: Validate browser capture CLI (dependency-free)
-        run: node --test tests/test_capture.mjs
+        run: node --test tests/test_capture.mjs tests/test_visual_states.mjs
       - name: Syntax-check capture engine
-        run: node --check scripts/capture.mjs
+        run: node --check scripts/capture.mjs && node --check scripts/validate_visual_states.mjs
   browser-integration:
     runs-on: ubuntu-latest
     steps:
@@ -58,6 +58,12 @@ jobs:
             exit 1
           fi
           node tests/validate_browser_evidence.mjs artifacts/browser-positive/capture-report.json artifacts/browser-negative/capture-report.json
+          node scripts/validate_visual_states.mjs tests/fixtures/visual-states.config.json
+          if node scripts/validate_visual_states.mjs tests/fixtures/clipped.config.json; then
+            echo 'FAIL: clipped phone was incorrectly accepted'
+            exit 1
+          fi
+          node tests/validate_browser_states.mjs artifacts/browser-states/visual-states-report.json artifacts/browser-clipped/visual-states-report.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
