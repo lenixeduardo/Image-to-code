@@ -13,6 +13,9 @@ import html
 import json
 import os
 import re
+import shutil
+import subprocess
+import tempfile
 import urllib.error
 import urllib.request
 from zipfile import ZipFile
@@ -100,6 +103,31 @@ def aggregate(runs,record_map):
         'note':'Historical runs without a qa-metrics artifact remain unknown; pass rates require sufficient verified coverage.'}
 
 
+def gh_download_records(repo, token, run_id, artifact_name):
+    """Fallback to official GitHub CLI on Actions when HTTP archive redirect fails.
+
+    All arguments are passed as a vector; the token is in the environment, not
+    command arguments or logs. A failed download never becomes an empty PASS.
+    """
+    gh=shutil.which('gh')
+    if not gh:return [], 'GH_CLI_UNAVAILABLE'
+    with tempfile.TemporaryDirectory(prefix='i2c-qa-') as temp:
+        env={**os.environ,'GH_TOKEN':token}
+        try:
+            proc=subprocess.run([gh,'run','download',str(run_id),'-R',repo,'-n',artifact_name,'-D',temp],env=env,capture_output=True,text=True,timeout=35,check=False)
+            if proc.returncode!=0:return [], 'GH_DOWNLOAD_FAILED'
+        except subprocess.TimeoutExpired:return [], 'GH_DOWNLOAD_TIMEOUT'
+        except OSError:return [], 'GH_DOWNLOAD_OS_ERROR'
+        results=[]
+        for filename in Path(temp).rglob('qa-metrics*.json'):
+            if not filename.is_file() or filename.stat().st_size>100000:continue
+            try:
+                doc=json.loads(filename.read_text())
+                for rec in doc if isinstance(doc,list) else [doc]:results.append(validate(rec))
+            except (ValueError,TypeError,json.JSONDecodeError):continue
+        return results, 'GH_DOWNLOAD_SUCCEEDED' if results else 'GH_EMPTY_OR_INVALID'
+
+
 def download_history(repo,token,limit=30):
     from urllib.parse import quote
     owner,name=repo.split('/',1)
@@ -107,17 +135,33 @@ def download_history(repo,token,limit=30):
     run_data=github_json(url,token)
     runs=run_data.get('workflow_runs',[])[:limit]
     records={}
+    diagnostics={}
     for run in runs:
         artifact_api=f'https://api.github.com/repos/{quote(owner)}/{quote(name)}/actions/runs/{run["id"]}/artifacts?per_page=100'
         try:artifacts=github_json(artifact_api,token).get('artifacts',[])
-        except urllib.error.HTTPError:continue
-        for obj in artifacts:
-            if obj.get('expired') or not obj.get('name','').startswith('qa-metrics-'):continue
+        except urllib.error.HTTPError as e:
+            diagnostics[run['id']] = f'ARTIFACT_LIST_HTTP_{e.code}'
+            continue
+        wanted=[o for o in artifacts if not o.get('expired') and o.get('name','').startswith('qa-metrics-')]
+        if not wanted:
+            diagnostics[run['id']] = 'ARTIFACT_NOT_PUBLISHED_OR_EXPIRED'
+        for obj in wanted:
             try:
                 blob=github_bytes(obj['archive_download_url'],token)
-                records.setdefault(run['id'],[]).extend(read_artifact_payload(blob))
-            except (urllib.error.HTTPError,ValueError,KeyError):continue
-    return aggregate(runs,records)
+                parsed=read_artifact_payload(blob)
+                if parsed:
+                    records.setdefault(run['id'],[]).extend(parsed)
+                    continue
+                err='DIRECT_ZIP_EMPTY'
+            except urllib.error.HTTPError as e:err=f'DIRECT_DOWNLOAD_HTTP_{e.code}'
+            except (ValueError,KeyError):err='DIRECT_DOWNLOAD_INVALID'
+            parsed,method=gh_download_records(repo,token,run['id'],obj['name'])
+            if parsed:records.setdefault(run['id'],[]).extend(parsed)
+            else:diagnostics[run['id']] = f'{err}; {method}'
+    report=aggregate(runs,records)
+    for row in report['runs']:
+        row['collection_note']=diagnostics.get(row['run_id'],'OK' if row['metrics_available'] else 'UNKNOWN')
+    return report
 
 
 def write_outputs(report,out):
