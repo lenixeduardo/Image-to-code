@@ -34,3 +34,13 @@ This file documents what has and has not been verified. It is not a claim that e
 - The browser report checker validates mobile/tablet/desktop/reference-width and smoke viewports, HTTP status, images, console errors, accessible controls, main landmark, and horizontal overflow.
 - The local tool environment still blocks browser navigation (`ERR_BLOCKED_BY_ADMINISTRATOR`). The new GitHub CI job is the authoritative environment for the browser runner.
 - This is a real browser **capture-engine integration test**, not a demonstration that an AI agent can infer and implement arbitrary pages without human or model involvement. The skill's semantic layer analysis and code authoring depend on an image-capable coding agent.
+
+
+## Live GitHub CI verification — v1.2.0
+
+- Run: https://github.com/lenixeduardo/Image-to-code/actions/runs/40992671341
+- Head commit: `41a6762cbba44b5a4f6839317b63bc8001b86243`.
+- `tests`: **success** (14 Python tests and 3 Node unit tests).
+- `browser-integration`: **success**, exercising actual Playwright Chromium for valid and deliberately broken responsive fixture pages.
+- The integration run checks screenshot output, reference viewport, accessible names, broken images, console errors, failed requests and horizontal overflow.
+- Scope: these results verify the functional supporting tools, **not** autonomous semantic image interpretation or universal screenshot-to-code fidelity; implementation still requires an image-capable coding agent.
