@@ -40,7 +40,7 @@ Uma **Agent Skill** para converter prints, mockups e imagens de referência em i
 Clone o repositório da skill e copie para o diretório global das skills:
 
 ```bash
-git clone https://github.com/lenixeduardo/image-to-code.git image-to-code
+git clone https://github.com/lenixeduardo/Image-to-code.git image-to-code
 mkdir -p ~/.agents/skills
 cp -R image-to-code ~/.agents/skills/image-to-code
 ```
@@ -123,12 +123,7 @@ Os créditos de autoria não implicam propriedade sobre imagens, fontes, marcas 
 
 Documento detalhado: [Padrão de demonstração](references/presentation-standard.md).
 
-## Controles de qualidade — v1.1.0
 
-- A captura verifica imagens ausentes, erros JavaScript, elementos interativos sem nome acessível, ausência de marco principal e overflow horizontal.
-- Captura em viewport correspondente à referência: `node scripts/capture.mjs --url http://localhost:3000 --reference-viewport 1179x616 --smoke-widths 360,430,768,1024,1280,1920`. A opção `--allow-warnings` serve apenas para diagnóstico, não para homologação.
-- Na homologação, usar `--require-matching-desktop` em `present_results.py` para impedir comparação de tamanhos diferentes.
-- Regiões mascaradas agora aparecem sinalizadas nas imagens de auditoria e ficam excluídas também dos arquivos de diferença.
-- Executar `python -m unittest discover -s tests -v` e `node --test tests/test_capture.mjs`. Testes dos scripts não comprovam fidelidade pixel-perfect sem referência e navegador real.
-- Se o ambiente bloquear o navegador ou a navegação, registrar a limitação, sem inventar capturas ou aprovações.
+### Functional QA / CI browser test
 
+The GitHub workflow runs a real Playwright Chromium integration test with a valid responsive page and a deliberately broken image case. The capture engine must accept the first and reject the second. These checks validate the **skill tooling**, not automatic image understanding or fidelity to unseen references.

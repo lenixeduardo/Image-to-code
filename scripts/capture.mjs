@@ -50,7 +50,7 @@ export function parseArgs(argv) {
 export function inspectResult(result) {
   return Boolean((result.status && (result.status < 200 || result.status >= 400)) ||
     result.horizontalOverflow || result.runtimeErrors?.length || result.brokenImages?.length ||
-    result.unlabeledControls?.length || result.missingMain);
+    result.unlabeledControls?.length || result.missingMain || result.failedRequests?.length || result.error);
 }
 
 async function capturePage(browser, args, name, size, screenshot = true) {
@@ -73,7 +73,7 @@ async function capturePage(browser, args, name, size, screenshot = true) {
     });
     await page.addStyleTag({ content: '*, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; caret-color: transparent !important; }' });
     const dom = await page.evaluate(() => {
-      const visible = el => { const rect = el.getBoundingClientRect(); const style = getComputedStyle(el); return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0; };
+      const visible = el => { const rect = el.getBoundingClientRect(); const style = getComputedStyle(el); return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0' && rect.width > 0 && rect.height > 0; };
       const unlabeledControls = [...document.querySelectorAll('button, a, input, select, textarea, [role="button"]')]
         .filter(visible).filter(el => !el.getAttribute('aria-label') && !el.getAttribute('aria-labelledby') &&
           !(el.textContent ?? '').trim() && !(el.getAttribute('title') ?? '').trim() &&
@@ -84,7 +84,7 @@ async function capturePage(browser, args, name, size, screenshot = true) {
         horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
         brokenImages: [...document.images].filter(img => !img.complete || img.naturalWidth === 0).map(img => img.currentSrc || img.src || '(unknown)').slice(0, 25),
         unlabeledControls,
-        missingMain: !document.querySelector('main, [role="main"]'),
+        missingMain: ![...document.querySelectorAll('main, [role="main"]')].some(visible),
         title: document.title,
         fontStatus: document.fonts.status,
       };
@@ -120,7 +120,7 @@ export async function run(args, chromium) {
     if (browser) await browser.close();
     await fs.writeFile(path.join(args.out, 'capture-report.json'), JSON.stringify({ url: args.url, captures: evidence, warnings, passed: warnings.length === 0 }, null, 2) + '\n');
   }
-  return !args.failOnWarnings || warnings.length === 0;
+  return !args.failOnWarnings || (warnings.length === 0 && evidence.length > 0);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {

@@ -25,3 +25,40 @@ jobs:
         run: node --test tests/test_capture.mjs
       - name: Syntax-check capture engine
         run: node --check scripts/capture.mjs
+  browser-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Capture valid and broken pages in a real browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 4173 --bind 127.0.0.1 --directory tests/fixtures >/tmp/image-to-code-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for i in $(seq 1 25); do
+            if curl --silent --fail http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/capture.mjs --url http://127.0.0.1:4173/ --out artifacts/browser-positive --reference-viewport 1179x616 --smoke-widths 360
+          if node scripts/capture.mjs --url http://127.0.0.1:4173/broken.html --out artifacts/browser-negative; then
+            echo 'FAIL: missing image was incorrectly accepted'
+            exit 1
+          fi
+          node tests/validate_browser_evidence.mjs artifacts/browser-positive/capture-report.json artifacts/browser-negative/capture-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-integration-evidence
+          path: artifacts/browser-*/
+

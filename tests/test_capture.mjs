@@ -20,5 +20,6 @@ test('browser quality failures are not reported as successful', () => {
   for (const failure of [
     { horizontalOverflow: true }, { runtimeErrors: ['boom'] }, { brokenImages: ['missing.png'] },
     { unlabeledControls: ['button'] }, { status: 404 }, { missingMain: true },
+    { failedRequests: [{url: 'http://localhost/missing.png'}] }, { error: 'Navigation failed' },
   ]) assert.equal(inspectResult({ status: 200, ...failure }), true);
 });

@@ -27,3 +27,10 @@ This file documents what has and has not been verified. It is not a claim that e
 6. Documentation corrects the GitHub clone path and distinguishes tooling tests from browser-based QA.
 
 **Interpretation:** 17 passing automated tests support the reliability of the deterministic tools. They do not independently establish a 10/10 visual fidelity score for reconstructed interfaces.
+
+## Functional audit update — v1.2.0
+
+- CI now launches actual Chromium on GitHub Actions and captures a responsive fixture; a separate fixture intentionally contains a broken image and **must** fail.
+- The browser report checker validates mobile/tablet/desktop/reference-width and smoke viewports, HTTP status, images, console errors, accessible controls, main landmark, and horizontal overflow.
+- The local tool environment still blocks browser navigation (`ERR_BLOCKED_BY_ADMINISTRATOR`). The new GitHub CI job is the authoritative environment for the browser runner.
+- This is a real browser **capture-engine integration test**, not a demonstration that an AI agent can infer and implement arbitrary pages without human or model involvement. The skill's semantic layer analysis and code authoring depend on an image-capable coding agent.
