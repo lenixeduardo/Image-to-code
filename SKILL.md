@@ -208,3 +208,18 @@ Do not assign a completed P0 to three separate projects unless each has independ
 4. No autonomous end-to-end agent success claim unless a properly authenticated CLI independently reads a new reference, constructs assets/code, runs a browser, performs corrections and exports verified evidence.
 
 Read [CLI/font/metrics setup](references/cli-font-metrics-setup.md), [font manifest](examples/font-source-manifest.example.json) and [remaining TODOs](TODO.md).
+
+
+## Mandatory polish gates from field tests (Catty · Zouti · GoatVPN)
+
+**Consult [the 32-item field polish register](references/field-polish-findings-2026-10-30.md) before starting and during acceptance.**
+
+- **Recreation default: `NO_SOURCE_SCREENSHOT_CROPS`.** The reference image is analysis/conditioning/comparison material, **not** an exportable page layer. Generate the complete missing scene cleanly, then use real DOM/CSS/SVG for interface, charts and text. An independently supplied original/logo/portrait asset is different from cropping a screenshot and can be reused only when authorized. If a user chooses hybrid mode explicitly, disclose it and score code-only regions separately. A high SSIM achieved by copied screenshot panels is NOT proof of code fidelity.
+- **Project/source identity:** pin active project, reference path and digest before every asset-generation or code step. Never substitute another supplied mockup or a generated concept.
+- **Scene owner boundaries:** keep enormous outer typography, mesh/globe lighting and decorative waves outside the device/monitor; reconstruct the screen content inside as independent components. No screen-text residues, duplicate bloom, blur patches, or smudged segmentation around subjects.
+- **Separate geometry and quality gates:** compare background (including luminance and light directions), icons/fonts/CTAs, subject anatomy, phone/device outline, globe nodes and internal UI. Apply explicit per-project anchors, semantic-region metrics, icon/font provenance and clipping/occlusion checks. Source-asset limitations must remain visible.
+- **Evidence and presentation:** only real browser screenshots may be called HTML reconstruction. Original+desktop render must be one side-by-side composite PNG; mobile+tablet must be another single composite with nonoverlapping labels. Without reference mobile/tablet shots, label layouts `INFERRED`, not pixel-perfect.
+- **Preview acceptance:** verify standalone HTML with local/served browser modes when supported, and provide ZIP plus a documented HTTP/HTTPS fallback when an app viewer doesn't execute HTML. Never assert that a client supports the preview without checking.
+- **Acceptance semantics:** operational checks (e.g., 24/24) and SSIM are diagnostic signals, not a 9.5/10 score. A critical region with poor fidelity blocks approval even if a sourced dashboard/asset yields favorable whole-frame metrics. Record changes and compare before/after by region.
+
+The field register is a **backlog**, not a declaration that these 32 improvements have been implemented.

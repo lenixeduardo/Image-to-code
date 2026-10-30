@@ -44,3 +44,18 @@
 - [x] CI history collector recovered metrics from three successive successful runs; 21 older records correctly report missing historical artifacts. Evidence: [workflow 41099885256](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099885256).
 - [ ] Hermes and Cursor CLI official installer review/execution on isolated hosts; still not verified.
 - [ ] Exact Catty typeface identity: repository CSS declares DM Sans and Pacifico but has no bundled original font files, and screenshots do not contain source font bytes. Obtain approved original font files or hash.
+
+
+## 2026-10-30 — Real-mockup polish register (Catty, Zouti, GoatVPN)
+
+**32 individually documented findings:** [POL-001 through POL-032](references/field-polish-findings-2026-10-30.md), with observed symptom, required correction and acceptance evidence. Their status is **OPEN unless already independently proven by tests**; older platform-level tooling does not mean a fidelity issue is fixed.
+
+- [ ] **P0 | POL-001, 011, 012:** Lock project/reference ID and evidence type. Reject a generated picture reported as browser-rendered HTML or assets from the wrong project.
+- [ ] **P0 | POL-002, 003:** Make strict **NO_SOURCE_SCREENSHOT_CROPS** the default for recreation; independently implement dashboard/cards/phone UI in HTML/CSS. Existing, independently supplied authored assets may be reused by agreement.
+- [ ] **P0 | POL-004, 005, 006, 007:** Rebuild and independently calibrate scene background, light falloff, outside/inside device boundary, globe/node geometry and device frame instead of hiding errors with blur.
+- [ ] **P0 | POL-008, 009, 010:** Enforce visible anatomy/controls, exact dialogue and text, and provenance-separated scores for actual coded regions; do not approve via whole-frame SSIM alone.
+- [ ] **P1 | POL-013–020:** Calibrate lighting, mask/alpha edges, licensed fonts, icon geometry, CTA dimensions, component alignment, and distinct character expressions per screen.
+- [ ] **P1 | POL-021–027:** Label inferred breakpoints, generate non-stacking paired evidence boards, validate HTML preview delivery, capture every interaction state and record per-region regression metrics.
+- [ ] **P2 | POL-028–032:** Integrate a reviewer hotspot dashboard, task generation from detected deltas, crop-free benchmark cohorts, authenticated multi-agent runs, and correct resolution/DPR close-ups.
+
+**Measured reproduction gaps (diagnostics, not grades):** Catty mean SSIM 0.3887→0.6269; Zouti hybrid 0.7898 overall vs 0.4565 coded headline/buttons; GoatVPN pure recreation 0.4994→0.5623 after a new background. GoatVPN 24/24 browser tests proved runtime correctness **only**. Do not score unseen mobile/tablet references as pixel-matched.

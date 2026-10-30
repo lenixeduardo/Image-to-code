@@ -94,3 +94,10 @@ New `scripts/audit_project_assets.py` scans static quoted paths in source and te
 - [CLI smoke matrix](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099774039): all six npm CLI runners completed with executable version checks; **no agent auth, no autonomous image-to-code invocation**. Versions: Claude Code 2.1.314, Codex 0.166.0, OpenCode 2.2.4, Freebuff 0.2.35, Codebuff 1.0.688, Gemini CLI 0.66.0.
 - [Historical metrics aggregation](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099885256): recovered 3 fully measured runs with 80/80 Python, 5/5 JavaScript and 4/4 browser gates each. 21 older runs have no compatible metrics artifact. Initial API download produced a false missing-data result; repaired with GitHub CLI fallback and verified the archive contents.
 - Font check reports `ORIGINAL_UNAVAILABLE` for approved Catty font source. Declared CSS families DM Sans and Pacifico were observed in the original repository, not proven identical to flattened mockup typography. No fonts were uploaded.
+
+
+## 2026-10-30 — Field-test polish register (documentation only)
+
+- Recorded **32 issue IDs (POL-001–POL-032)** with symptoms, actionable remediation, scope, and required acceptance evidence in `references/field-polish-findings-2026-10-30.md`.
+- Cases: Catty clipped phone/character and exact dialogue, Zouti crop-biased scores (0.7898 full vs 0.4565 HTML region), GoatVPN screenshot-free low visual similarity (0.4994→0.5623) despite 24/24 runtime checks, background lettering spill, glows/globe/device mismatches, and HTML viewer delivery.
+- Updated SKILL and README to make strict no-screenshot-crop the default for screenshot **recreation**, track source provenance and enforce per-region evidence. No application code/graphics changed, no new pixel-fidelity test claimed passed, no Catty/Zouti/GoatVPN repository modified.

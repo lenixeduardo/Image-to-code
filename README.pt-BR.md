@@ -213,3 +213,12 @@ A conferência definitiva de fontes exige arquivos originais licenciados ou SHA-
 A agregação de métricas é automática após cada CI e semanalmente. O relatório histórico é entregue em CSV, JSON, Markdown e HTML; dados antigos ausentes aparecem como **N/D**, não zero.
 
 [Manual completo](references/cli-font-metrics-setup.md) · [Pendências](TODO.md)
+
+
+## Polimentos registrados a partir de testes reais
+
+A skill documenta agora [32 melhorias verificáveis](references/field-polish-findings-2026-10-30.md) encontradas em Catty, Zouti e GoatVPN. O [TODO.md](TODO.md) separa P0/P1/P2 e preserva as pendências ainda **não implementadas**.
+
+Para recriações a partir de screenshots, o padrão é **não reutilizar recortes da imagem original como assets finais**. A referência é usada para orientar geração de uma cena nova e para comparação; a interface, textos, dashboards e controles devem ser construídos em HTML/CSS/SVG. Assets originais independentes podem ser reutilizados quando disponibilizados e autorizados. O modo híbrido exige consentimento explícito e métricas separadas.
+
+Exigências: travar o mockup correto, preservar anatomia e iluminação, medir fontes/ícones/botões por região, bloquear elementos cortados, separar cenas internas/externas do dispositivo, apresentar uma prancha desktop original × navegador e outra mobile + tablet, e fornecer HTML/ZIP com alternativa de abertura. SSIM e testes funcionais **não equivalem** a fidelidade 9,5/10.

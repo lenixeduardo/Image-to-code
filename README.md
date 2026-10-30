@@ -248,3 +248,12 @@ Definitive font identity uses original licensed font bytes or a trusted SHA-256 
 The `Aggregate Image to Code QA history` workflow automatically collects current and historical QA counters as JSON/CSV/Markdown/HTML artifacts after the main CI and every Monday; expired/absent historical records remain `N/D`.
 
 See [setup and security notes](references/cli-font-metrics-setup.md) and [TODO](TODO.md).
+
+
+## Real-mockup lessons and quality backlog
+
+The **Catty / Zouti / GoatVPN field-test findings** are documented as [32 actionable polish items](references/field-polish-findings-2026-10-30.md), grouped by P0/P1/P2 with observed failures and per-item acceptance evidence. Tracked in [TODO.md](TODO.md).
+
+Default for a screenshot **recreation** is **no screenshot-derived page assets**. Generate complete clean scene assets from the image reference and implement all text, controls, charts and nested app interfaces as code. Original independently supplied assets may be reused with permission; hybrid reference crops require explicit opt-in and separate scores. A generated illustration is not a browser capture, and a passing UI smoke test is not a pixel-perfect grade.
+
+Previous tests highlight why the gates matter: Zouti scored 0.7898 full-screen SSIM mainly because screenshot panels were retained while its HTML-only headline/buttons scored 0.4565; GoatVPN's screenshot-free rebuild passed 24 runtime checks but had 0.4994 SSIM, later 0.5623 after background refinement. These are diagnostics, not comparable numeric project grades.
