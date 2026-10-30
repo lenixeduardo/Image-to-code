@@ -35,5 +35,12 @@
 - [x] Add automatic post-CI/weekly longitudinal aggregation and per-run sanitized QA artifact emission, with unavailable older data marked N/D.
 - [ ] Run each external CLI with provider authorization on a real image-to-code case, collect an actual browser screenshot and correction trace. Installation checks alone do not satisfy this.
 - [ ] Provide approved licensed font files (or verified hashes) for Catty and other benchmarks; until then exact font identity is unconfirmed.
-- [ ] Accumulate at least three new completed CI executions with metric artifacts for statistically meaningful cross-run trends; older runs may have expired evidence.
+- [x] Gather three successive CI executions with usable QA metric artifacts (3/3 observed, 80 Python + 5 JavaScript + 4 browser gates per run). This is early trend coverage only; 21 older runs lack these artifacts.
 - [ ] Review native Hermes/Cursor installers and execute them on a supported, isolated environment; do not pipe unreviewed remote scripts into a shell.
+
+## Evidências de preparação v1.8.0
+
+- [x] Six npm code-agent CLIs installed and returned version numbers on isolated CI runners: Claude Code 2.1.314, Codex 0.166.0, OpenCode 2.2.4, Freebuff 0.2.35, Codebuff 1.0.688, Gemini CLI 0.66.0. Evidence: [workflow 41099774039](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099774039). Installation and `--version` are **not** authenticated skill invocation.
+- [x] CI history collector recovered metrics from three successive successful runs; 21 older records correctly report missing historical artifacts. Evidence: [workflow 41099885256](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099885256).
+- [ ] Hermes and Cursor CLI official installer review/execution on isolated hosts; still not verified.
+- [ ] Exact Catty typeface identity: repository CSS declares DM Sans and Pacifico but has no bundled original font files, and screenshots do not contain source font bytes. Obtain approved original font files or hash.

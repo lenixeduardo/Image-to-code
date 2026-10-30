@@ -88,3 +88,9 @@ New `scripts/audit_project_assets.py` scans static quoted paths in source and te
 - Added FontTools source-byte SHA-256 checks with an explicit ORIGINAL_UNAVAILABLE result, plus metadata. The approved Catty source font was not available, so definitive identity is not claimed.
 - Added CI job metric emission and an independent `workflow_run`/scheduled historical aggregator using read-only GitHub Actions API access. Exports JSON, CSV, MD and HTML without proprietary screenshots, tokens or font files. Old missing/expired artifacts produce N/D.
 - Unit tests cover missing/identical/different font bytes, CLI placement and historical-metrics integrity; a successful CLI version check is not autonomous image-to-code execution.
+
+## v1.8.0 — Real runner evidence (2026-10-30)
+
+- [CLI smoke matrix](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099774039): all six npm CLI runners completed with executable version checks; **no agent auth, no autonomous image-to-code invocation**. Versions: Claude Code 2.1.314, Codex 0.166.0, OpenCode 2.2.4, Freebuff 0.2.35, Codebuff 1.0.688, Gemini CLI 0.66.0.
+- [Historical metrics aggregation](https://github.com/lenixeduardo/Image-to-code/actions/runs/41099885256): recovered 3 fully measured runs with 80/80 Python, 5/5 JavaScript and 4/4 browser gates each. 21 older runs have no compatible metrics artifact. Initial API download produced a false missing-data result; repaired with GitHub CLI fallback and verified the archive contents.
+- Font check reports `ORIGINAL_UNAVAILABLE` for approved Catty font source. Declared CSS families DM Sans and Pacifico were observed in the original repository, not proven identical to flattened mockup typography. No fonts were uploaded.
