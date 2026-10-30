@@ -88,6 +88,17 @@ Read `references/responsive-rules.md` and `references/implementation-guide.md` d
 5. Produce the **mandatory presentation boards** via `scripts/present_results.py`, and show both **directly inside the chat**, not just as downloadable links: mobile + tablet side-by-side; if the source reference is a desktop UI screenshot, original desktop + rebuilt desktop side-by-side. Never use a single giant multi-device collage. If source and render are not the same viewport, disclose the mismatch and recapture before a fidelity claim. Consult `references/presentation-standard.md`.
 6. Target **≥9.5/10 on every viewport that has a reference**, with screenshot evidence and the weighted rubric. For inferred breakpoints, report responsive quality separately, not pixel fidelity. If target cannot be reached, report exact deviations and evidence instead of claiming success.
 
+## Mandatory fidelity contract and multi-agent rejection gates (v1.4.0)
+
+**Read [fidelity-gates.md](references/fidelity-gates.md) and run its two specialist reviews plus an independent acceptance review before reporting success.** Use distinct agents when the runtime supports them; otherwise perform three clearly documented separate review passes. Never represent a role-based manual pass as an actually spawned agent.
+
+- **Agent A, UI fidelity:** inspect original icons rather than swapping icon libraries; verify the actual loaded font, computed CSS and glyphs; compare button size/position/padding with independently measured reference XYWH. A larger CTA is a failed gate even if the global screenshot diff is low.
+- **Agent B, asset integrity:** preserve the approved original subject and embedded glow as one composite when baked together. Forbid regenerating it, artificial upper/lower blur, extra CSS halos and clipped subject details. Verify extremities (including a cat's paw) as dedicated regions. A cropped screenshot derivative does not count as the lost original.
+- **Agent C, acceptance:** review A and B evidence, run browser interactions, independently compare each critical region and check protected asset hashes. Reject altered icons, font fallback, CTA-size deviations, missing details and unverified visual claims.
+- **Run the strict contract gate:** `python scripts/audit_fidelity_contract.py --contract artifacts/visual-fidelity.contract.json --project . --out artifacts/audit/fidelity-contract-report.json`. Start from the example JSON and **replace all sample coordinates** with actual measured screenshot regions, add immutable original asset hashes, and enable `require_protected_assets` for pages with approved source art. Do not change thresholds after seeing failures to force acceptance.
+- Treat user-reported visual defects as **separate, blocking regression cases**: icon shape, typography, CTA geometry, upper/lower glow boundaries and all visible subject details. Never average a critical failure away in the total score. Do not claim ≥9.5 while any unresolved blocking regression remains.
+- Reference and render must be captured at matching viewport/DPR, with fonts/images loaded and relevant states matched. This gate does not substitute for a real browser, human visual review or in-chat evidence boards.
+
 ## Required output contract
 
 Return a project-ready implementation, **not just a text prompt**:
