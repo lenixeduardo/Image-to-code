@@ -61,6 +61,8 @@ Use fluid CSS (`clamp`, `%`, `minmax`, `aspect-ratio`, `object-fit`) where it ma
 
 ### 4. Export and organize assets
 
+**Mandatory source-asset audit for an existing project:** run `python scripts/audit_project_assets.py --project /path/to/project --out artifacts/project-assets.json` before implementation, and repeat it before acceptance. This catches static references to missing images even if an `onError` fallback makes the page appear visually intact. Missing approved source assets are blockers; do not silently fabricate, replace, or mark the output pixel-perfect.
+
 - Store generated or extracted page assets under the project's preferred static directory (e.g., `public/assets/image-to-code/`), named by function: `hero-background.webp`, `hero-subject.png`, `logo.svg`, `icon-menu.svg`, etc.
 - Export raster sources at original fidelity. Don't upscale and claim added detail. Use vector only when the shape is legitimately recoverable. Maintain transparent backgrounds for isolated foreground assets.
 - Avoid cropping text into bitmap assets if it should be selectable/accessibly rendered as HTML.

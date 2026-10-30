@@ -28,19 +28,8 @@ This file documents what has and has not been verified. It is not a claim that e
 
 **Interpretation:** 17 passing automated tests support the reliability of the deterministic tools. They do not independently establish a 10/10 visual fidelity score for reconstructed interfaces.
 
-## Functional audit update — v1.2.0
+## v1.3.0 — Catty full-stack regression case
 
-- CI now launches actual Chromium on GitHub Actions and captures a responsive fixture; a separate fixture intentionally contains a broken image and **must** fail.
-- The browser report checker validates mobile/tablet/desktop/reference-width and smoke viewports, HTTP status, images, console errors, accessible controls, main landmark, and horizontal overflow.
-- The local tool environment still blocks browser navigation (`ERR_BLOCKED_BY_ADMINISTRATOR`). The new GitHub CI job is the authoritative environment for the browser runner.
-- This is a real browser **capture-engine integration test**, not a demonstration that an AI agent can infer and implement arbitrary pages without human or model involvement. The skill's semantic layer analysis and code authoring depend on an image-capable coding agent.
+Tested against `lenixeduardo/catty-minhaamiga` with approved three-screen mobile mockup and a GitHub Actions Chromium run. The separate Catty QA branch/PR reported 25/31 checks passing, with five missing image variants and one desktop tab interaction failing. Original Catty application tests: 36 passed, 4 failed, 2 skipped. Build passed. Gemini Live streaming and authenticated Supabase were not validated without real secrets/device permissions.
 
-
-## Live GitHub CI verification — v1.2.0
-
-- Run: https://github.com/lenixeduardo/Image-to-code/actions/runs/40992671341
-- Head commit: `41a6762cbba44b5a4f6839317b63bc8001b86243`.
-- `tests`: **success** (14 Python tests and 3 Node unit tests).
-- `browser-integration`: **success**, exercising actual Playwright Chromium for valid and deliberately broken responsive fixture pages.
-- The integration run checks screenshot output, reference viewport, accessible names, broken images, console errors, failed requests and horizontal overflow.
-- Scope: these results verify the functional supporting tools, **not** autonomous semantic image interpretation or universal screenshot-to-code fidelity; implementation still requires an image-capable coding agent.
+New `scripts/audit_project_assets.py` scans static quoted paths in source and tests whether corresponding public assets exist, even when browser fallback images are loaded successfully. It identified all five missing Catty assets. This is a necessary quality gate, not proof that a coding agent can generate arbitrary UIs from scratch. Full end-to-end image-to-code score remains non-perfect until reference assets and interactive behavior are validated.
