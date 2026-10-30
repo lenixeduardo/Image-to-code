@@ -1,5 +1,9 @@
 name: CLI runtime environment validation
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/cli-runtime-validation.yml'
   workflow_dispatch:
     inputs:
       agent:
@@ -17,7 +21,7 @@ on:
           - cursor
       install_native:
         type: boolean
-        description: Attempt isolated native npm installation (Hermes/Cursor require manual official installers)
+        description: Attempt isolated npm installation (Hermes/Cursor require manual official installers)
         default: true
 permissions:
   contents: read
@@ -25,18 +29,24 @@ jobs:
   cli-runtime:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        agent: ${{ fromJSON(github.event_name == 'workflow_dispatch' && format('["{0}"]', inputs.agent) || '["claude-code", "codex", "opencode", "freebuff", "codebuff", "gemini-cli"]') }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check installation layout and CLI availability
+      - name: Check skill layout and install CLI in temporary sandbox
         env:
-          AGENT_NAME: ${{ inputs.agent }}
-          SHOULD_INSTALL: ${{ inputs.install_native }}
+          AGENT_NAME: ${{ matrix.agent }}
+          SHOULD_INSTALL: ${{ github.event_name == 'push' || inputs.install_native }}
         run: |
           set -euo pipefail
           case "$AGENT_NAME" in
@@ -51,6 +61,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cli-runtime-preflight-${{ inputs.agent }}
+          name: cli-runtime-preflight-${{ matrix.agent }}
           path: artifacts/cli-runtime/cli-preflight.json
           retention-days: 21
